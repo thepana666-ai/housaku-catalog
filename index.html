@@ -432,7 +432,7 @@ a.prow:active{background:var(--row-hover)}
     <div class="qact">
       <a class="btn primary big" id="qline" target="_blank" rel="noopener" hidden>用 LINE 傳給我們</a>
       <p class="qnote" id="qlineNote" hidden>會打開 LINE → 選「禾賀」→ 按傳送<span id="qaddWrap" hidden>。還不是好友？<a class="qadd" id="qadd" target="_blank" rel="noopener">先按這裡加好友</a></span></p>
-      <a class="btn dark big" id="qtel" hidden>打電話 <span class="tel" id="qtelTxt"></span></a>
+      <a class="btn dark big" id="qtel" hidden><span style="white-space:nowrap">打電話</span> <span class="tel" id="qtelTxt"></span></a>
       <details class="qmore" id="qmore">
         <summary>其他方式</summary>
         <div class="qmore-body">
@@ -1084,10 +1084,27 @@ function goBack() {
 function go(h) { if (curHash() === h) onNav(); else location.hash = h; }
 
 /* ── 搜尋框 ── */
-function setKw(v) { kw.value = v; kwclear.hidden = !v; }
+function setKw(v) { kw.value = v; kwclear.hidden = !v; if (!v) fitPh(); }
+/* 提示字：放得下就用完整「品名、車種、原廠號」；窄（字放大、頁面縮放）就換短的，不讓尾巴被切掉 */
+var PH = ['品名、車種、原廠號', '品名、車種、料號', '品名、車種'], phCtx = null;
+function fitPh() {
+  if (kw.value) return;
+  var cs = getComputedStyle(kw), room = kw.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  if (!(room > 0)) return;
+  try { phCtx = phCtx || document.createElement('canvas').getContext('2d'); } catch (e) { phCtx = null; }
+  if (!phCtx) return;
+  phCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var pick = PH[PH.length - 1];
+  for (var i = 0; i < PH.length; i++) if (phCtx.measureText(PH[i]).width <= room - 2) { pick = PH[i]; break; }
+  if (kw.placeholder !== pick) kw.placeholder = pick;
+}
+fitPh();
+if (window.ResizeObserver) new ResizeObserver(fitPh).observe(kw); else window.addEventListener('resize', fitPh);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPh);
 var composing = false;
 function onKw() {
   kwclear.hidden = !kw.value;
+  if (!kw.value) fitPh();
   if (curHash() === 'find') drawMain('find', false, true);
   else if (kw.value.trim()) location.hash = 'find';
 }
