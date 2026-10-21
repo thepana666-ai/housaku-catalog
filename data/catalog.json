@@ -1,1 +1,5 @@
-[]
+[
+{"id":"kqcm48pjm6","code":"H0096","name":"机油冷卻器","series":"FUSO","car_code":"4D33","spec":null,"brand":"正廠","part_no":"ME017229","part_no_key":"ME017229","qty_a":21,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":2,"photos":["kqcm48pjm6-1.jpg","kqcm48pjm6-2.jpg"]},
+{"id":"wwbybcwpnj","code":"H0095","name":"机油冷卻器","series":"FUSO","car_code":"4D33","spec":null,"brand":"正廠(外匯)","part_no":null,"part_no_key":null,"qty_a":2,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":2,"photos":["wwbybcwpnj-1.jpg"]},
+{"id":"exccpax77k","code":"H0094","name":"噴油邦浦","series":"HINO","car_code":"JO8E","spec":"五期","brand":"正廠(外匯)","part_no":"22100-E0531","part_no_key":"22100E0531","qty_a":10,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":4,"photos":["exccpax77k-1.jpg","exccpax77k-2.jpg","exccpax77k-3.jpg"]}
+]
