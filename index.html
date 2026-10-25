@@ -218,6 +218,11 @@ a.prow:active{background:var(--row-hover)}
 .c-ph{position:relative}
 .c-ph img,.c-ph .noimg{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:var(--plate)}
 .c-ph .noimg{display:grid;place-items:center;color:var(--tile-muted);font-size:.86rem}
+.c-ph .noimg svg{width:64%;height:64%}
+/* 沒照片的商品（2026-10-26）：放公司 logo＋請洽電，不留空格 */
+.nophoto{display:grid;place-items:center;align-content:center;gap:.7rem;aspect-ratio:4/3;border-radius:6px;background:var(--plate);color:var(--tile-ink);text-align:center;padding:1rem}
+.nophoto svg{width:5.5rem;height:5.5rem}
+.nophoto p{margin:0;font-size:1.02rem;line-height:1.45;max-width:26em}
 /* 已加入詢價單：縮圖右上角小勾（不是新欄） */
 .c-ph .ck{display:none;position:absolute;top:-.3rem;right:-.3rem;width:1.3rem;height:1.3rem;border-radius:50%;background:var(--brass);color:var(--on-brass);box-shadow:0 0 0 2px var(--bg);place-items:center}
 .c-ph.inq .ck{display:grid}
@@ -458,7 +463,7 @@ a.prow:active{background:var(--row-hover)}
   <p class="lb-hint" id="lbHint">點兩下放大・兩指可縮放・手機橫拿看更大</p>
 </div>
 
-<script id="data" type="application/json">[{"id":"kqcm48pjm6","code":"H0096","name":"機油冷卻器","series":"FUSO","car_code":"4D33","spec":null,"brand":"正廠","part_no":"ME017229","part_no_key":"ME017229","qty_a":21,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":2,"photos":["kqcm48pjm6-1.jpg","kqcm48pjm6-2.jpg"]},{"id":"la7yx5tyr3","code":"H0202","name":"煞車繼動閥","series":"HINO","car_code":"HINO","spec":"9721950450","brand":"WABCO","part_no":"972 195 045 0","part_no_key":"9721950450","qty_a":37,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":null,"photos":["la7yx5tyr3-1.jpg"]},{"id":"exccpax77k","code":"H0094","name":"噴油邦浦","series":"HINO","car_code":"JO8E","spec":"五期","brand":"正廠(外匯)","part_no":"22100-E0531","part_no_key":"22100E0531","qty_a":10,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":4,"photos":["exccpax77k-1.jpg","exccpax77k-2.jpg","exccpax77k-3.jpg"]},{"id":"my70w6nj1x","code":"H0201","name":"電動邦浦","series":"其他","car_code":"0","spec":"附座","brand":"MANDO","part_no":null,"part_no_key":null,"qty_a":1026,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":null,"photos":["my70w6nj1x-1.jpg"]}]</script>
+<script id="data" type="application/json">[{"id":"kqcm48pjm6","code":"H0096","name":"機油冷卻器","series":"FUSO","car_code":"4D33","spec":null,"brand":"正廠","part_no":"ME017229","part_no_key":"ME017229","qty_a":21,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":2,"photos":["kqcm48pjm6-1.jpg","kqcm48pjm6-2.jpg"]},{"id":"tjbj5tx7or","code":"H0205","name":"活塞","series":"FUSO","car_code":"6D17-T","spec":"ME131940","brand":"正廠","part_no":"ME131940","part_no_key":"ME131940","qty_a":203,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":3,"photos":[]},{"id":"dd556abxmf","code":"H0203","name":"噴油嘴總成","series":"FUSO","car_code":"6M60-3AT","spec":null,"brand":"外匯","part_no":"0214 07E 5691","part_no_key":"021407E5691","qty_a":29,"unit_a":"支","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":4,"photos":["dd556abxmf-1.jpg"]},{"id":"1tzrbst6k1","code":"H0204","name":"活塞","series":"FUSO","car_code":"6M60-4AT","spec":null,"brand":"TWN","part_no":null,"part_no_key":null,"qty_a":155,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":5,"photos":[]},{"id":"la7yx5tyr3","code":"H0202","name":"煞車繼動閥","series":"HINO","car_code":"HINO","spec":"9721950450","brand":"WABCO","part_no":"972 195 045 0","part_no_key":"9721950450","qty_a":37,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":null,"photos":["la7yx5tyr3-1.jpg"]},{"id":"exccpax77k","code":"H0094","name":"噴油邦浦","series":"HINO","car_code":"JO8E","spec":"五期","brand":"正廠(外匯)","part_no":"22100-E0531","part_no_key":"22100E0531","qty_a":10,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":4,"photos":["exccpax77k-1.jpg","exccpax77k-2.jpg","exccpax77k-3.jpg"]},{"id":"xapxylk5tx","code":"H0008","name":"排氣煞車","series":"HINO","car_code":"P11C","spec":"E)2342","brand":"外匯","part_no":"17020-2342","part_no_key":"170202342","qty_a":4,"unit_a":"組","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":4,"photos":["xapxylk5tx-1.jpg","xapxylk5tx-2.jpg","xapxylk5tx-3.jpg","xapxylk5tx-4.jpg"]},{"id":"my70w6nj1x","code":"H0201","name":"電動邦浦","series":"其他","car_code":"0","spec":"附座","brand":"MANDO","part_no":null,"part_no_key":null,"qty_a":1026,"unit_a":"只","qty_b":0,"unit_b":null,"qty_per_unit":1,"stage":null,"photos":["my70w6nj1x-1.jpg"]}]</script>
 <script id="site" type="application/json">{"name":"禾賀 清倉零件","phone":"04-2220-0119","phone_e164":"+886422200119","line_id":"22200119","email":"tory@housaku.co","whatsapp":"+886905253456","domain":"housaku.tw","address":"台中市南區愛國街16號","hours":"","reply_note":"","noindex":true,"search_aliases":{"series":{"FUSO":["三菱","扶桑","三菱扶桑"],"ISUZU":["五十鈴"],"HINO":["日野"],"NISSAN(UD)":["日產","優迪","UD"],"TOYOTA":["豐田"],"KOMATSU":["小松"],"KUBOTA":["久保田"],"YANMAR":["洋馬"],"CUMMINS":["康明斯"],"VOLVO":["富豪"],"MAZDA":["馬自達"],"SCANIA":["速克達","斯堪尼亞"],"韓國車":["現代","起亞"]},"name_syn":[["汽缸墊","汽缸床墊片"],["汽缸蓋墊","汽缸蓋墊片"],["墊片組","修包"]]},"brand_classes":{"正廠":"正廠","TWN":"台灣製","台灣":"台灣製","日本":"日本副廠","日本製":"日本副廠","中古":"中古","外匯":"中古"}}</script>
 <script>
 (function(){
@@ -822,13 +827,15 @@ function convRow(x) {
   if (qtyParts(x).length < 2 || !(x.qty_per_unit > 0) || !has(x.unit_a) || !has(x.unit_b)) return '';
   return '<dt>換算</dt><dd>每' + esc(x.unit_a) + '&nbsp;<span class="code">' + esc(x.qty_per_unit) + '</span>&nbsp;' + esc(x.unit_b) + '</dd>';
 }
+/* 公司 logo（藍底黃 H，同 housaku 官網 icon）：沒照片的商品用它當佔位圖 */
+var LOGO_SVG = '<svg class="hlogo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="9" fill="#13204F"/><path d="M17 14h8.5v15h13V14H47v36h-8.5V36.5h-13V50H17z" fill="#EBC444"/></svg>';
 var CK = '<span class="ck"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.3 8.4l3 3 6.4-7.1" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">已在詢價單</span></span>';
 /* 清單縮圖用小圖（photos/t/），商品頁與放大用大圖（photos/） */
 function thumb(x, head) {
   if (head) return '<span class="c-ph" role="columnheader">照片</span>';
   var f = x.photos && x.photos[0];
   return '<span class="c-ph' + (inInq(x.id) ? ' inq' : '') + '" role="cell" data-pid="' + esc(x.id) + '">' +
-    (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="72" height="72">' : '<span class="noimg">—</span>') + CK + '</span>';
+    (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="72" height="72">' : '<span class="noimg" title="目前無照片，請洽電公司索取商品現狀照片">' + LOGO_SVG + '</span>') + CK + '</span>';
 }
 /* 長串沒空白的規格（像料號）准許在自己欄內折行，其他規格不拆字 */
 function specBrk(v) { return has(v) && String(v).length >= 8 && !/\s/.test(String(v)) ? ' brk' : ''; }
@@ -985,7 +992,7 @@ function vProduct(x) {
     ? '<div class="strip' + (photos.length > 1 ? ' multi' : '') + '" id="pstrip">' + photos.map(function (p, i) {
         return '<button type="button" class="shot" data-lb="' + i + '" aria-label="放大第 ' + (i + 1) + ' 張"><img src="photos/' + esc(p) + '" alt="' + esc(txt(x.name)) + ' 照片 ' + (i + 1) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></button>';
       }).join('') + '</div>' + (photos.length > 1 ? '<span class="shotn" id="pshotn">1 / ' + photos.length + '</span>' : '')
-    : '<div class="nophoto">—</div>';
+    : '<div class="nophoto">' + LOGO_SVG + '<p>目前無照片，請洽電公司索取商品現狀照片。</p></div>';
   var bc = has(x.brand) ? brandClass(x.brand) : '';
   var rawBrand = has(x.brand) && bc !== String(x.brand).trim() ? '<dt class="raw">原廠牌字</dt><dd class="raw">' + esc(x.brand) + '</dd>' : '';
   return '<div class="pnav"><button type="button" class="btn back" data-act="back">← 回上一頁</button>' +
