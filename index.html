@@ -332,9 +332,14 @@ a.prow:active{background:var(--row-hover)}
 @media (min-width:760px){.pp-top{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start;gap:1.6rem}}
 .pp-top>*{min-width:0}
 .gallery{position:relative}
-.strip{display:flex;gap:.5rem;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:thin;border-radius:6px}
+/* 商品頁照片轉盤（業主 2026-10-26：不要橫拉軸，像翻圖那樣一次一張左右滑）：捲軸藏起來、snap 一張一張、兩側 ‹ › 鈕 */
+.strip{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;border-radius:6px;scroll-behavior:smooth}
+.strip::-webkit-scrollbar{display:none}
 .shot{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:4/3;max-width:100%;padding:0;border:0;border-radius:6px;overflow:hidden;background:var(--plate);cursor:zoom-in}
-.strip.multi .shot{flex-basis:88%}
+.strip.multi .shot{flex-basis:100%}
+.parr{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:2.6rem;height:3.2rem;border:0;border-radius:6px;background:var(--scrim);color:var(--lb-ink);font-size:1.9rem;line-height:1;cursor:pointer;opacity:.85}
+.parr.prev{left:.35rem}.parr.next{right:.35rem}
+.parr:disabled{opacity:.25;cursor:default}
 .shot img{display:block;width:100%;height:100%;object-fit:contain}
 .shotn{position:absolute;right:.5rem;bottom:.5rem;padding:.1rem .55rem;border-radius:4px;background:var(--scrim);color:var(--lb-ink);font-family:var(--font-code);font-weight:600;font-size:.9rem;pointer-events:none}
 .nophoto{display:grid;place-items:center;aspect-ratio:4/3;max-width:100%;border-radius:6px;background:var(--plate);color:var(--tile-muted)}
@@ -1270,7 +1275,7 @@ function vProduct(x) {
   var gal = photos.length
     ? '<div class="strip' + (photos.length > 1 ? ' multi' : '') + '" id="pstrip">' + photos.map(function (p, i) {
         return '<button type="button" class="shot" data-lb="' + i + '" aria-label="放大第 ' + (i + 1) + ' 張"><img src="photos/' + esc(p) + '" alt="' + esc(txt(x.name)) + ' 照片 ' + (i + 1) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></button>';
-      }).join('') + '</div>' + (photos.length > 1 ? '<span class="shotn" id="pshotn">1 / ' + photos.length + '</span>' : '')
+      }).join('') + '</div>' + (photos.length > 1 ? '<button type="button" class="parr prev" data-pstep="-1" aria-label="上一張">‹</button><button type="button" class="parr next" data-pstep="1" aria-label="下一張">›</button><span class="shotn" id="pshotn">1 / ' + photos.length + '</span>' : '')
     : '<div class="nophoto">' + LOGO_SVG + '<p>目前無照片，請洽電公司索取商品現狀照片。</p></div>';
   var bc = has(x.brand) ? brandClass(x.brand) : '';
   var rawBrand = has(x.brand) && bc !== String(x.brand).trim() ? '<dt class="raw">原廠牌字</dt><dd class="raw">' + esc(x.brand) + '</dd>' : '';
@@ -1884,8 +1889,9 @@ document.addEventListener('keydown', function (e) {
 
 /* ── 頁面內點擊 ── */
 view.addEventListener('click', function (e) {
-  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-flip],[data-kind],[data-tadd],#addq');
+  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-flip],[data-kind],[data-tadd],[data-pstep],#addq');
   if (!t) return;
+  if (t.hasAttribute('data-pstep')) { var ps = document.getElementById('pstrip'); if (ps) ps.scrollBy({ left: ps.clientWidth * Number(t.getAttribute('data-pstep')), behavior: 'smooth' }); return; }
   if (t.hasAttribute('data-kind')) { wallKind = t.getAttribute('data-kind'); wallReset(); redrawWall(false); return; }
   if (t.hasAttribute('data-tadd')) { var tid = t.getAttribute('data-tadd'); if (inInq(tid)) go('q'); else { addInq(tid); live.textContent = '已加入詢價單'; } return; }
   if (t.hasAttribute('data-flip')) { flipSet(t.getAttribute('data-flip')); go('f'); return; }
