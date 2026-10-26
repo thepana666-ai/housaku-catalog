@@ -1308,10 +1308,12 @@ function watchBack() {
   var b = view.querySelector('.btn.back');
   fback.hidden = !b;
   if (!b || !window.IntersectionObserver) return;
+  /* 頂端搜尋列是 sticky，會蓋住那顆鈕：被蓋住就算捲出畫面了 */
+  var hd = document.querySelector('.top'), hh = hd ? hd.getBoundingClientRect().height : 0;
   fbackObs = new IntersectionObserver(function (en) {
     var e = en[0];
-    fback.classList.toggle('show', !e.isIntersecting && e.boundingClientRect.bottom < 0);
-  }, { threshold: 0 });
+    fback.classList.toggle('show', !e.isIntersecting && e.boundingClientRect.bottom < hh + 1);
+  }, { threshold: 0, rootMargin: (-Math.round(hh)) + 'px 0px 0px 0px' });
   fbackObs.observe(b);
 }
 fback.addEventListener('click', goBack);
