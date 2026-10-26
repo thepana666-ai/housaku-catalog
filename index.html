@@ -1620,13 +1620,26 @@ function drawSheet() {
   if (UNDO && UNDO.i >= INQ.length) h += undoRow();
   sheetList.innerHTML = h + '</div>';
 }
-/* 例：1. 活塞｜K4E｜STD｜TWN｜2007（五大標籤 品名｜車種｜規格｜品牌｜年份；空欄位整段省略，不印 —；品牌用原字，店裡對得上）。
-   2026-10-26 業主：不填數量、不印 H0202 這種公司內部編號，數量之後電話談 */
+/* 詢價文字（業主 2026-10-26 兩次指正）：五大標籤 品名 車種 規格 品牌 年份；不填數量、不印內部編號；
+   不用「｜」分隔，用空格把每一欄排齊（中文字算 2 格、英數算 1 格，差額用全形空白補）。
+   例：
+   1. 排氣煞車　　P11C　E)2342　　　外匯
+   2. 電動邦浦　　0　　 附座　　　　MANDO
+   LINE 的字不是等寬，只能盡量齊；空欄位留空、欄寬照最長的那一筆 */
+function dispW(str) { var w = 0; for (var i = 0; i < str.length; i++) w += str.charCodeAt(i) > 255 ? 2 : 1; return w; }
+function padTo(str, w) { var d = w - dispW(str); if (d <= 0) return str; var out = str; while (d >= 2) { out += '\u3000'; d -= 2; } if (d === 1) out += ' '; return out; }
 function inquiryText() {
-  var lines = INQ.map(function (e, i) {
+  var rows = INQ.map(function (e) {
     var x = byId.get(e.id);
-    var parts = [x.name, x.car_code, x.spec, x.brand, x.year].filter(has).map(String);
-    return (i + 1) + '. ' + parts.join('｜');
+    return [x.name, x.car_code, x.spec, x.brand, x.year].map(function (v) { return has(v) ? String(v).trim() : ''; });
+  });
+  var cols = 5, widths = [];
+  for (var c = 0; c < cols; c++) { var m = 0; rows.forEach(function (r) { m = Math.max(m, dispW(r[c])); }); widths.push(m); }
+  var last = cols - 1; while (last > 0 && widths[last] === 0) last--;
+  var lines = rows.map(function (r, i) {
+    var cells = [];
+    for (var c = 0; c <= last; c++) cells.push(c === last ? r[c] : padTo(r[c], widths[c] + 2));
+    return padTo((i + 1) + '.', rows.length >= 10 ? 4 : 3) + cells.join('').replace(/[\s\u3000]+$/, '');
   });
   return '禾賀清倉詢價\n' + lines.join('\n') + '\n—— 請回覆報價，謝謝';
 }
