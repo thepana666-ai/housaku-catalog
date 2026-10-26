@@ -80,7 +80,7 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html{font-size:19px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html{font-size:19px;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-y:contain}  /* 手機下拉換一批自己做，不讓瀏覽器的下拉重新整理搶走 */
 html.lock{overflow:hidden}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:1rem;line-height:1.5;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--head)}
@@ -143,14 +143,58 @@ h1,h2{text-wrap:balance}
 .wall{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 @media (min-width:560px){.wall{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:820px){.wall{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.tile{display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none}
+@media (min-width:1100px){.wall{grid-template-columns:repeat(5,minmax(0,1fr))}}  /* 業主 2026-10-26 2A：電腦 5 欄一批 30 */
+.tile{position:relative;display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none}
+.tlink{display:flex;flex-direction:column;min-width:0;text-decoration:none;color:inherit}
+/* 卡片角落：幾張照片（左下）、只剩 N（右下，亞馬遜「Only 2 left」） */
+.tile .t-np,.tile .t-left{position:absolute;bottom:.35rem;padding:.05rem .4rem;border-radius:4px;font-size:.72rem;font-weight:700;line-height:1.4;pointer-events:none}
+.tile .t-np{left:.35rem;background:var(--scrim);color:var(--lb-ink)}
+.tile .t-left{right:.35rem;background:#b3261e;color:#fff}
+/* 五大標籤：品名／車種／規格・品牌・年份，再一列 現有數量＋「＋詢價」（蝦皮卡片的加入購物車） */
+.tile .t-m{display:flex;flex-wrap:wrap;gap:0 .5rem;padding:0 .55rem;min-height:1.5rem;max-height:3rem;overflow:hidden;color:var(--muted);font-size:.82rem;line-height:1.45}
+.tile .t-f{display:flex;align-items:center;justify-content:space-between;gap:.4rem;padding:.35rem .55rem .5rem;margin-top:auto}
+.tile .t-q{font-size:.86rem;min-width:0;line-height:1.35}
+.tile .t-ql{display:none}  /* 手機卡片窄，「現有」兩個字省掉，只印數字＋單位；寬一點才印 */
+@media (min-width:560px){.tile .t-ql{display:inline}}
+.tile .t-q .qa,.tile .t-q .qb{font-family:var(--font-code);font-weight:600;white-space:nowrap}  /* 數字跟單位不拆開；兩種單位之間才換行 */
+.tile .t-q .u{color:var(--muted);margin-left:.1em}
+.t-add{flex:none;min-height:2.4rem;padding:0 .7rem;border:2px solid var(--brass);border-radius:6px;background:var(--brass);color:var(--on-brass);font-weight:700;font-size:.88rem;line-height:1;white-space:nowrap;cursor:pointer}
+.t-add.on{background:transparent;color:var(--brass-ink)}
 .tile .c-ph img{border-radius:0}
 .tile .c-ph .ck{top:.35rem;right:.35rem}
 .tile .t-n{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;padding:.45rem .55rem 0;font-weight:700;line-height:1.3;min-height:calc(2.6em + .45rem)}
-.tile .t-c{padding:.1rem .55rem .55rem;font-family:var(--font-code);font-weight:600;font-size:1rem;color:var(--muted);min-height:1.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .t-c{padding:.1rem .55rem .15rem;font-family:var(--font-code);font-weight:600;font-size:1rem;color:var(--ink);min-height:1.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile:active{filter:brightness(.97)}
 @media (hover:hover){.tile:hover{border-color:var(--brass)}}
-.wall-more{display:flex;justify-content:center;margin-top:.9rem}
+/* 類別快捷列（淘寶最上面那排）：一排可左右滑 */
+.chips{display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:none;margin:0 0 .7rem;padding-bottom:.1rem}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:.3rem;min-height:2.5rem;padding:0 .85rem;border:2px solid var(--field-line);border-radius:999px;background:transparent;color:var(--ink);font-weight:700;font-size:.92rem;white-space:nowrap;cursor:pointer}
+.chip b{font-family:var(--font-code);font-weight:600;font-size:.9em;color:var(--muted)}
+.chip.on{background:var(--head);border-color:var(--head);color:var(--head-ink)}
+.chip.on b{color:var(--brass)}
+/* 牆底：還有就「再看 N 個」（自動接的備援）；看完了就說看完了＋換一批 */
+.wall-end{display:flex;flex-direction:column;align-items:center;gap:.6rem;min-height:3.4rem;margin-top:.9rem}
+.wall-done{margin:0;color:var(--muted)}
+/* 你剛看過（亞馬遜 recently viewed）：一排小卡左右滑，只存在客人自己的瀏覽器 */
+.recent{margin:1.1rem 0 .2rem;padding-top:.8rem;border-top:2px solid var(--rule)}
+.recent h2{margin:0 0 .5rem;font-size:1.05rem}
+.rstrip{display:flex;gap:.5rem;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:.3rem;scrollbar-width:thin}
+.rtile{flex:0 0 6.4rem;scroll-snap-align:start;display:flex;flex-direction:column;min-width:0;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.rtile img,.rtile .noimg{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;background:var(--plate)}
+.rtile .noimg{display:grid;place-items:center;color:var(--tile-muted)}
+.rtile .noimg svg{width:60%;height:60%}
+.rtile .rn{padding:.3rem .4rem 0;font-size:.82rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtile .rc{padding:0 .4rem .35rem;font-family:var(--font-code);font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 回到最上面（右下角，詢價列上方）；下拉換一批的提示（頂端小膠囊） */
+.totop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(4.6rem + env(safe-area-inset-bottom,0px));z-index:29;width:3rem;height:3rem;border-radius:50%;border:2px solid var(--brass);background:var(--head);color:var(--head-ink);font-size:1.4rem;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .18s,transform .18s;cursor:pointer}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+html.lock .totop{display:none}
+.ptr{position:fixed;left:50%;top:env(safe-area-inset-top,0px);z-index:31;transform:translate(-50%,-120%);padding:.35rem .9rem;border-radius:999px;background:var(--head);color:var(--head-ink);border:2px solid var(--brass);font-weight:700;font-size:.9rem;white-space:nowrap;transition:transform .15s;pointer-events:none}
+.ptr.show{transform:translate(-50%,.6rem)}
+.ptr.ready{background:var(--brass);color:var(--on-brass)}
+/* 清單規格欄後面的年份（小字） */
+.yr{color:var(--muted);font-size:.9em;margin-left:.25em}
 /* 資料還沒到（全部商品分檔載入中） */
 .loading{padding:1.2rem 0;border-top:2px solid var(--rule)}
 .loading p{margin:0 0 .8rem;font-size:1.1rem;font-weight:700;color:var(--muted)}
@@ -477,6 +521,8 @@ html.lock .fback{display:none}
 <main class="main gut"><div class="inner" id="view"><noscript><p>這個頁面需要開啟 JavaScript 才能瀏覽。</p></noscript></div></main>
 <p class="sr" id="live" role="status" aria-live="polite"></p>
 <button type="button" class="fback" id="fback" hidden><span class="ar" aria-hidden="true">‹</span>上一頁</button>
+<button type="button" class="totop" id="totop" aria-label="回到最上面">↑</button>
+<div class="ptr" id="ptr" aria-hidden="true"><span>再往下拉換一批</span></div>
 
 <div class="qbar zero" id="qbar"><div class="gut"><div class="inner">
   <a class="qbtel" id="qbarTel" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>打電話</a>
@@ -524,7 +570,7 @@ html.lock .fback{display:none}
   <p class="lb-hint" id="lbHint">點兩下放大・兩指可縮放・手機橫拿看更大</p>
 </div>
 
-<script id="data" type="application/json">{"n":8,"np":6,"brands":2,"cars":8,"names":7,"wall":[{"id":"dd556abxmf","name":"噴油嘴總成","car_code":"6M60-3AT","ph":"dd556abxmf-1.jpg"},{"id":"exccpax77k","name":"噴油邦浦","car_code":"JO8E","ph":"exccpax77k-1.jpg"},{"id":"kqcm48pjm6","name":"機油冷卻器","car_code":"4D33","ph":"kqcm48pjm6-1.jpg"},{"id":"la7yx5tyr3","name":"煞車繼動閥","car_code":"HINO","ph":"la7yx5tyr3-1.jpg"},{"id":"my70w6nj1x","name":"電動邦浦","car_code":"0","ph":"my70w6nj1x-1.jpg"},{"id":"xapxylk5tx","name":"排氣煞車","car_code":"P11C","ph":"xapxylk5tx-1.jpg"}]}</script>
+<script id="data" type="application/json">{"n":8,"np":6,"brands":2,"cars":8,"names":7,"wall":[{"id":"dd556abxmf","name":"噴油嘴總成","car_code":"6M60-3AT","spec":null,"brand":"外匯","year":null,"qty_a":29,"unit_a":"支","qty_b":0,"unit_b":null,"cls":"引擎類","np":1,"ph":"dd556abxmf-1.jpg"},{"id":"exccpax77k","name":"噴油邦浦","car_code":"JO8E","spec":"五期","brand":"正廠(外匯)","year":null,"qty_a":10,"unit_a":"只","qty_b":0,"unit_b":null,"cls":"引擎類","np":3,"ph":"exccpax77k-1.jpg"},{"id":"kqcm48pjm6","name":"機油冷卻器","car_code":"4D33","spec":null,"brand":"正廠","year":null,"qty_a":21,"unit_a":"只","qty_b":0,"unit_b":null,"cls":"引擎類","np":2,"ph":"kqcm48pjm6-1.jpg"},{"id":"la7yx5tyr3","name":"煞車繼動閥","car_code":"HINO","spec":"9721950450","brand":"WABCO","year":null,"qty_a":37,"unit_a":"只","qty_b":0,"unit_b":null,"cls":"底盤類","np":1,"ph":"la7yx5tyr3-1.jpg"},{"id":"my70w6nj1x","name":"電動邦浦","car_code":"0","spec":"附座","brand":"MANDO","year":null,"qty_a":1026,"unit_a":"只","qty_b":0,"unit_b":null,"cls":"電裝類","np":1,"ph":"my70w6nj1x-1.jpg"},{"id":"xapxylk5tx","name":"排氣煞車","car_code":"P11C","spec":"E)2342","brand":"外匯","year":null,"qty_a":4,"unit_a":"組","qty_b":0,"unit_b":null,"cls":"引擎類","np":4,"ph":"xapxylk5tx-1.jpg"}]}</script>
 <script id="site" type="application/json">{"name":"禾賀 清倉零件","phone":"04-2220-0119","phone_e164":"+886422200119","line_id":"22200119","email":"tory@housaku.co","whatsapp":"+886905253456","domain":"housaku.tw","address":"台中市南區愛國街16號","hours":"","reply_note":"","noindex":true,"search_aliases":{"series":{"FUSO":["三菱","扶桑","三菱扶桑"],"ISUZU":["五十鈴"],"HINO":["日野"],"NISSAN(UD)":["日產","優迪","UD"],"TOYOTA":["豐田"],"KOMATSU":["小松"],"KUBOTA":["久保田"],"YANMAR":["洋馬"],"CUMMINS":["康明斯"],"VOLVO":["富豪"],"MAZDA":["馬自達"],"SCANIA":["速克達","斯堪尼亞"],"韓國車":["現代","起亞"]},"name_syn":[["汽缸墊","汽缸床墊片"],["汽缸蓋墊","汽缸蓋墊片"],["墊片組","修包"]]},"brand_classes":{"正廠":"正廠","TWN":"台灣製","台灣":"台灣製","日本":"日本副廠","日本製":"日本副廠","中古":"中古"}}</script>
 <script>
 (function(){
@@ -700,7 +746,7 @@ function initData(items) {
   nBrands = SERIES.filter(function (s) { return s.name !== OTHER; }).length;
   PHOTO_ITEMS = ORDER.filter(hasPhoto);
   DATA.forEach(function (x) {
-    x._f = [x.name, x.car_code, x.series, x.spec, x.brand, x.part_no_key, x.code].map(norm);
+    x._f = [x.name, x.car_code, x.series, x.spec, x.brand, x.year, x.part_no_key, x.code].map(norm);
     x._hay = x._f.concat(aliasOf(x.series).map(norm), [norm(brandClass(x.brand))]).join('|');
   });
   READY = true;
@@ -927,6 +973,8 @@ function thumb(x, head) {
   return '<span class="c-ph' + (inInq(x.id) ? ' inq' : '') + '" role="cell" data-pid="' + esc(x.id) + '">' +
     (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="96" height="96">' : '<span class="noimg" title="目前無照片，請洽電公司索取商品現狀照片">' + LOGO_SVG + '</span>') + CK + '</span>';
 }
+/* 規格欄＝規格＋年份（第五個標籤，小字；業主 2026-10-26 5A 年份對外） */
+function specYear(x) { return (has(x.spec) ? esc(x.spec) : (has(x.year) ? '' : DASH)) + (has(x.year) ? '<span class="yr">' + esc(x.year) + '</span>' : ''); }
 /* 長串沒空白的規格（像料號）准許在自己欄內折行，其他規格不拆字 */
 function specBrk(v) { return has(v) && String(v).length >= 8 && !/\s/.test(String(v)) ? ' brk' : ''; }
 var HEAD = { name: '品名', car: '車種', spec: '規格', brand: '品牌', qty: '數量' };
@@ -946,12 +994,12 @@ function plist(items, opt) {
   opt = opt || {};
   var mode = opt.mode === 'grouped' || opt.mode === 'bycar' ? opt.mode : 'all';
   var withCar = mode === 'all';
-  var withSpec = items.some(function (x) { return has(x.spec); });
+  var withSpec = items.some(function (x) { return has(x.spec) || has(x.year); });
   function cells(x, head) {
     function c(k, inner, extra) { return '<span class="c-' + k + (extra || '') + '" role="' + (head ? 'columnheader' : 'cell') + '">' + inner + '</span>'; }
     var m = c('name', head ? HEAD.name : val(x.name)) +
       (withCar ? c('car', head ? HEAD.car : val(x.car_code)) : '') +
-      (withSpec ? c('spec', head ? HEAD.spec : val(x.spec), head ? '' : specBrk(x.spec)) : '');
+      (withSpec ? c('spec', head ? HEAD.spec : specYear(x), head ? '' : specBrk(x.spec)) : '');
     var s = c('brand', head ? HEAD.brand : brandCell(x)) + c('qty', head ? HEAD.qty : qtyList(x));
     return thumb(x, head) + '<span class="c-main">' + m + '</span><span class="c-side">' + s + '</span>';
   }
@@ -1007,43 +1055,115 @@ function contactDl() {
 function updLine() { return '<p class="upd">' + (GEN ? '資料更新 <b>' + esc(GEN) + '</b>・' : '') + '數量以來電確認為準</p>'; }
 
 /* ── 各頁 ── */
-/* ── 首頁圖片牆（淘寶式、每次打開都不一樣）：資料沒到之前用內嵌候選池，到了用全部有照片的商品；
-   同一批在這次瀏覽裡不重排（回上一頁不會跳掉），按「換一批」或重新整理才重洗 ── */
-var WALL_PAGE = 24, wallSeq = [], wallShown = 0;
+/* ── 首頁圖片牆第二版（業主 2026-10-26 拍板 1A 2A 3A 4A＋下拉換一批）：
+   卡片＝照片（幾張、只剩 N）＋品名／車種／規格・品牌・年份＋現有數量＋「＋詢價」；
+   手機 2 欄一批 12、≥560 3 欄 18、≥820 4 欄 24、≥1100 5 欄 30；快到底自動接下一批（備援鈕留著）、看完了說看完了；
+   類別快捷列只看那一類；「你剛看過」一排；右下回頂；手機最上面往下拉換一批。
+   資料沒到之前用內嵌候選池（候選池每筆已帶五大標籤＋數量＋類別＋張數），到了用全部有照片的商品；
+   同一批在這次瀏覽裡不重排（回上一頁不會跳掉），換一批／下拉／重新整理才重洗 ── */
+var wallSeq = [], wallShown = 0, wallKind = '', wallObs = null;
 function num(v) { return typeof v === 'number' && isFinite(v) && v >= 0 ? Math.floor(v) : null; }
 function fmtN(n) { return n == null ? '—' : String(n); }
 function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-function wallSource() { return READY ? PHOTO_ITEMS : POOL; }
+function wallCols() { var w = window.innerWidth; return w >= 1100 ? 5 : w >= 820 ? 4 : w >= 560 ? 3 : 2; }
+function wallPage() { return wallCols() * 6; }
+function kindOk(x) { return !wallKind || kindOf(x) === wallKind; }
+function wallAll() { return READY ? PHOTO_ITEMS : POOL; }
+function wallSource() { return wallAll().filter(kindOk); }
 function firstPhoto(x) { return READY && x.photos ? x.photos[0] : x.ph; }
+function photoCount(x) { return READY ? (x.photos ? x.photos.length : 0) : (num(x.np) || 1); }
 function wallReset() { wallSeq = shuffle(wallSource().slice()); wallShown = 0; }
 function tile(x) {
   var f = firstPhoto(x);
   if (!f) return '';
-  return '<a class="tile" href="#p-' + esc(x.id) + '"><span class="c-ph' + (inInq(x.id) ? ' inq' : '') + '" data-pid="' + esc(x.id) + '">' +
-    '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="320" height="320">' + CK + '</span>' +
-    '<span class="t-n">' + val(x.name) + '</span><span class="t-c">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span></a>';
+  var on = inInq(x.id), np = photoCount(x), q = qtyParts(x), tot = 0;
+  q.forEach(function (p) { tot += p.n; });
+  var meta = [x.spec, has(x.brand) ? brandClass(x.brand) : null, x.year].filter(has).map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('');
+  return '<div class="tile"><a class="tlink" href="#p-' + esc(x.id) + '"><span class="c-ph' + (on ? ' inq' : '') + '" data-pid="' + esc(x.id) + '">' +
+    '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="320" height="320">' + CK +
+    (np > 1 ? '<span class="t-np">' + np + ' 張</span>' : '') + (tot > 0 && tot <= 2 ? '<span class="t-left">只剩 ' + tot + '</span>' : '') + '</span>' +
+    '<span class="t-n">' + val(x.name) + '</span><span class="t-c">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span>' +
+    '<span class="t-m">' + meta + '</span></a>' +
+    '<span class="t-f"><span class="t-q">' + (q.length ? '<span class="t-ql">現有 </span>' + qtyList(x) : DASH) + '</span>' +
+    '<button type="button" class="t-add' + (on ? ' on' : '') + '" data-tadd="' + esc(x.id) + '" aria-label="' + (on ? '已在詢價單，看詢價單' : '加入詢價單') + '">' + (on ? '✓ 已加' : '＋詢價') + '</button></span></div>';
 }
-function wallMoreBtn() {
+function kindChips() {
+  var all = wallAll(), counts = {};
+  all.forEach(function (x) { var k = kindOf(x); counts[k] = (counts[k] || 0) + 1; });
+  var h = '<div class="chips" role="tablist" aria-label="只看哪一類"><button type="button" class="chip' + (wallKind ? '' : ' on') + '" data-kind="" role="tab" aria-selected="' + !wallKind + '">全部<b>' + all.length + '</b></button>';
+  KIND_ORDER.forEach(function (k) {
+    if (!counts[k]) return;
+    h += '<button type="button" class="chip' + (wallKind === k ? ' on' : '') + '" data-kind="' + esc(k) + '" role="tab" aria-selected="' + (wallKind === k) + '">' + esc(k.replace(/類$/, '')) + '<b>' + counts[k] + '</b></button>';
+  });
+  return h + '</div>';
+}
+function wallEndHtml() {
   var left = wallSeq.length - wallShown;
-  return left > 0 ? '<button type="button" class="btn line" data-act="wallmore">再看 ' + Math.min(WALL_PAGE, left) + ' 個</button>' : '';
+  if (left > 0) return '<button type="button" class="btn line" data-act="wallmore">再看 ' + Math.min(wallPage(), left) + ' 個</button>';
+  if (!wallSeq.length) return '<p class="wall-done">這一類還沒有照片的商品</p>';
+  return '<p class="wall-done">這 ' + wallSeq.length + ' 項都看完了</p><button type="button" class="btn dark" data-act="wallmix">換一批再看</button>';
 }
 function wallHtml() {
-  if (!wallSource().length) return '';
-  if (!wallSeq.length) wallReset();
-  if (!wallShown) wallShown = Math.min(wallSeq.length, WALL_PAGE);
+  if (!wallAll().length) return '';
+  if (!wallSeq.length && wallSource().length) wallReset();
+  if (!wallShown) wallShown = Math.min(wallSeq.length, wallPage());
   var np = READY ? PHOTO_ITEMS.length : (num(META.np) || POOL.length);
-  return '<div class="wall-h"><h2>隨便看看</h2><span class="n">有照片 <b>' + np + '</b> 項・每次打開都不一樣</span>' +
+  return '<div id="wallWrap">' + recentHtml() +
+    '<div class="wall-h"><h2>隨便看看</h2><span class="n">有照片 <b>' + np + '</b> 項・每次打開都不一樣・往下滑會一直有</span>' +
     '<div class="wall-act"><button type="button" class="btn small line" data-act="wallmix">換一批</button><button type="button" class="btn small dark" data-flip="wall">翻圖</button></div></div>' +
+    kindChips() +
     '<div class="wall" id="wall">' + wallSeq.slice(0, wallShown).map(tile).join('') + '</div>' +
-    '<div class="wall-more" id="wallMore">' + wallMoreBtn() + '</div>';
+    '<div class="wall-end" id="wallEnd">' + wallEndHtml() + '</div></div>';
 }
 function wallMore() {
-  var w = document.getElementById('wall'), m = document.getElementById('wallMore');
-  if (!w) return;
-  var to = Math.min(wallSeq.length, wallShown + WALL_PAGE);
+  var w = document.getElementById('wall'), m = document.getElementById('wallEnd');
+  if (!w || wallShown >= wallSeq.length) return false;
+  var to = Math.min(wallSeq.length, wallShown + wallPage());
   w.insertAdjacentHTML('beforeend', wallSeq.slice(wallShown, to).map(tile).join(''));
   wallShown = to;
-  if (m) m.innerHTML = wallMoreBtn();
+  if (m) m.innerHTML = wallEndHtml();
+  return true;
+}
+/* 無限捲動：牆底的哨兵離畫面不到一個螢幕高就接下一批；接完還是太近就再接（最多連接 4 批） */
+function watchWall() {
+  if (wallObs) { wallObs.disconnect(); wallObs = null; }
+  var end = document.getElementById('wallEnd');
+  if (!end || !window.IntersectionObserver) return;
+  wallObs = new IntersectionObserver(function (en) {
+    if (!en[0].isIntersecting || mainHash !== 'home') return;
+    for (var i = 0; i < 4; i++) {
+      if (!wallMore()) break;
+      if (end.getBoundingClientRect().top > window.innerHeight + 800) break;
+    }
+  }, { rootMargin: '0px 0px 800px 0px' });
+  wallObs.observe(end);
+}
+function redrawWall(scrollTo) {
+  var w = document.getElementById('wallWrap');
+  if (!w) return;
+  w.outerHTML = wallHtml();
+  watchWall();
+  if (scrollTo) { var h = document.querySelector('#wallWrap .wall-h'); if (h) h.scrollIntoView({ block: 'start' }); }
+}
+/* 你剛看過：只存在客人自己的瀏覽器（localStorage），最多 12 個，最新的在前 */
+var RECENT_KEY = 'hohe-recent-v1', RECENT_MAX = 12;
+function loadRecent() {
+  try { var a = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(a) ? a.filter(function (v) { return typeof v === 'string'; }) : []; } catch (e) { return []; }
+}
+function noteRecent(id) {
+  var a = loadRecent().filter(function (v) { return v !== id; });
+  a.unshift(id);
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(a.slice(0, RECENT_MAX))); } catch (e) {}
+}
+function recentHtml() {
+  if (!READY) return '';
+  var items = loadRecent().map(function (id) { return byId.get(id); }).filter(Boolean);
+  if (!items.length) return '';
+  return '<div class="recent"><h2>你剛看過</h2><div class="rstrip">' + items.map(function (x) {
+    var f = x.photos && x.photos[0];
+    return '<a class="rtile" href="#p-' + esc(x.id) + '">' + (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="96" height="96">' : '<span class="noimg">' + LOGO_SVG + '</span>') +
+      '<span class="rn">' + val(x.name) + '</span><span class="rc">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span></a>';
+  }).join('') + '</div></div>';
 }
 function vHome() {
   var n = READY ? DATA.length : num(META.n), nb = READY ? nBrands : num(META.brands), nc = READY ? nCarCodes : num(META.cars), nn = READY ? NAMES.length : num(META.names);
@@ -1167,6 +1287,7 @@ function vProduct(x) {
       '<dt>廠牌</dt><dd>' + seriesLabel(s.name) + '</dd>' +
       '<dt>規格</dt><dd>' + val(x.spec) + '</dd>' +
       '<dt>品牌</dt><dd>' + (bc ? esc(bc) : DASH) + '</dd>' + rawBrand +
+      (has(x.year) ? '<dt>年份</dt><dd>' + esc(x.year) + '</dd>' : '') +
       '<dt>料號</dt><dd class="code">' + val(x.part_no) + '</dd>' +
       '<dt>類別</dt><dd>' + esc(kindOf(x)) + '</dd>' +
       fitsRow(x) + convRow(x) +
@@ -1235,13 +1356,15 @@ function drawMain(h, back, force) {
     case 'kindname': html = vKindItems(r.ki, r.ni); break;
     case 'all': html = vAll(); break;
     case 'find': html = vFind(); break;
-    case 'p': curItem = r.item; html = r.item ? vProduct(r.item) : vMissing(); break;
+    case 'p': curItem = r.item; if (r.item) noteRecent(r.item.id); html = r.item ? vProduct(r.item) : vMissing(); break;
     default: html = vHome();
   }
   view.innerHTML = html;
   mainHash = h;
   if (!force) window.scrollTo(0, back ? (scrolls.get(h) || 0) : 0);
   watchBack();
+  watchWall();
+  onScrollTop();
   var strip = document.getElementById('pstrip'), n = document.getElementById('pshotn');
   if (strip && n) strip.addEventListener('scroll', function () {
     var first = strip.firstElementChild;
@@ -1291,7 +1414,7 @@ function onDataReady(items) {
   if (wallSeq.length) {
     var seen = new Set(wallSeq.map(function (x) { return x.id; }));
     wallSeq = wallSeq.map(function (x) { return byId.get(x.id); }).filter(Boolean)
-      .concat(shuffle(PHOTO_ITEMS.filter(function (x) { return !seen.has(x.id); })));
+      .concat(shuffle(PHOTO_ITEMS.filter(function (x) { return !seen.has(x.id) && kindOk(x); })));
     wallShown = Math.min(wallShown, wallSeq.length);
   }
   if (PENDING) drawMain(mainHash, false, true);
@@ -1317,6 +1440,27 @@ function watchBack() {
   fbackObs.observe(b);
 }
 fback.addEventListener('click', goBack);
+/* 回到最上面：捲超過一個半螢幕才出現 */
+var totop = document.getElementById('totop');
+function onScrollTop() { totop.classList.toggle('show', window.scrollY > window.innerHeight * 1.5); }
+window.addEventListener('scroll', onScrollTop, { passive: true });
+totop.addEventListener('click', function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } });
+/* 手機在首頁最上面往下拉 80px 放開＝換一批（淘寶手機版的下拉）；瀏覽器自己的下拉重新整理已用 overscroll-behavior 關掉 */
+var ptr = document.getElementById('ptr'), ptrY = null, ptrD = 0, PTR_MIN = 80;
+function ptrOk() { return mainHash === 'home' && window.scrollY <= 0 && !document.documentElement.classList.contains('lock'); }
+document.addEventListener('touchstart', function (e) { ptrY = ptrOk() && e.touches.length === 1 ? e.touches[0].clientY : null; ptrD = 0; }, { passive: true });
+document.addEventListener('touchmove', function (e) {
+  if (ptrY === null) return;
+  ptrD = e.touches[0].clientY - ptrY;
+  if (ptrD < 24 || window.scrollY > 0) { ptr.classList.remove('show', 'ready'); return; }
+  ptr.classList.add('show'); ptr.classList.toggle('ready', ptrD >= PTR_MIN);
+  ptr.firstElementChild.textContent = ptrD >= PTR_MIN ? '放開換一批' : '再往下拉換一批';
+}, { passive: true });
+document.addEventListener('touchend', function () {
+  var fire = ptrY !== null && ptrD >= PTR_MIN && ptrOk();
+  ptrY = null; ptrD = 0; ptr.classList.remove('show', 'ready');
+  if (fire) { wallReset(); redrawWall(false); live.textContent = '已換一批'; }
+}, { passive: true });
 function goBack() {
   if (stack.length > 1) history.back();
   else { stack = []; location.hash = 'home'; }
@@ -1418,6 +1562,7 @@ function updateAddBtn() {
 /* 清單縮圖角落的小勾跟著詢價單更新 */
 function refreshMarks() {
   view.querySelectorAll('.c-ph[data-pid]').forEach(function (el) { el.classList.toggle('inq', inInq(el.getAttribute('data-pid'))); });
+  view.querySelectorAll('[data-tadd]').forEach(function (b) { var on = inInq(b.getAttribute('data-tadd')); b.classList.toggle('on', on); b.textContent = on ? '✓ 已加' : '＋詢價'; b.setAttribute('aria-label', on ? '已在詢價單，看詢價單' : '加入詢價單'); });
 }
 function addInq(id) {
   if (!inInq(id)) INQ.push({ id: id, want: '' });
@@ -1454,7 +1599,7 @@ function drawSheet() {
   setLinks();
   if (!READY) { sheetList.innerHTML = '<p class="qempty">' + (LOAD_ERR ? '商品資料載入失敗，請檢查網路後重新整理' : '正在載入商品資料…') + '</p>'; return; }
   if (!INQ.length) { sheetList.innerHTML = '<p class="qempty">還沒選零件</p>' + (UNDO ? '<div class="qgrid">' + undoRow() + '</div>' : ''); return; }
-  var withSpec = INQ.some(function (e) { return has(byId.get(e.id).spec); });
+  var withSpec = INQ.some(function (e) { var x = byId.get(e.id); return has(x.spec) || has(x.year); });
   var h = '<div class="qgrid' + (withSpec ? '' : ' nospec') + '" role="table"><div class="qrow qhead" role="row"><span class="c-name" role="columnheader">品名</span>' +
     '<span class="c-car" role="columnheader">車種</span>' + (withSpec ? '<span class="c-spec" role="columnheader">規格</span>' : '') + '<span class="c-qty" role="columnheader">現有</span></div>';
   INQ.forEach(function (e, i) {
@@ -1464,18 +1609,18 @@ function drawSheet() {
       '<span class="c-name" role="cell">' + val(x.name) + '</span>' +
       '<button type="button" class="q-rm" data-rm="' + esc(x.id) + '" aria-label="移除 ' + esc(txt(x.name)) + '">移除</button>' +
       '<span class="c-car" role="cell">' + val(x.car_code) + '</span>' +
-      (withSpec ? '<span class="c-spec" role="cell">' + val(x.spec) + '</span>' : '') +
+      (withSpec ? '<span class="c-spec" role="cell">' + specYear(x) + '</span>' : '') +
       '<span class="c-qty" role="cell">' + qtyList(x) + '</span></div>';
   });
   if (UNDO && UNDO.i >= INQ.length) h += undoRow();
   sheetList.innerHTML = h + '</div>';
 }
-/* 例：1. 活塞｜K4E｜STD｜TWN（空欄位整段省略，不印 —；品牌用原字，店裡對得上）。
+/* 例：1. 活塞｜K4E｜STD｜TWN｜2007（五大標籤 品名｜車種｜規格｜品牌｜年份；空欄位整段省略，不印 —；品牌用原字，店裡對得上）。
    2026-10-26 業主：不填數量、不印 H0202 這種公司內部編號，數量之後電話談 */
 function inquiryText() {
   var lines = INQ.map(function (e, i) {
     var x = byId.get(e.id);
-    var parts = [x.name, x.car_code, x.spec, x.brand].filter(has).map(String);
+    var parts = [x.name, x.car_code, x.spec, x.brand, x.year].filter(has).map(String);
     return (i + 1) + '. ' + parts.join('｜');
   });
   return '禾賀清倉詢價\n' + lines.join('\n') + '\n—— 請回覆報價，謝謝';
@@ -1584,7 +1729,7 @@ function fcard(x, i) {
   var f = firstPhoto(x), on = inInq(x.id);
   return '<div class="fcard" data-i="' + i + '"><a class="fimg" href="#p-' + esc(x.id) + '"><img src="photos/' + esc(f) + '" alt="' + esc(txt(x.name)) + '" loading="lazy" decoding="async"></a>' +
     '<div class="fbody"><h3>' + val(x.name) + '</h3><div class="fmeta"><span class="code">' + val(x.car_code) + '</span>' +
-    (READY ? (has(x.spec) ? '<span>' + esc(x.spec) + '</span>' : '') + (has(x.brand) ? '<span>' + brandCell(x) + '</span>' : '') + '<span class="c-qty">' + qtyList(x) + '</span>' : '') + '</div>' +
+    (has(x.spec) ? '<span>' + esc(x.spec) + '</span>' : '') + (has(x.brand) ? '<span>' + brandCell(x) + '</span>' : '') + (has(x.year) ? '<span>' + esc(x.year) + '</span>' : '') + (READY ? '<span class="c-qty">' + qtyList(x) + '</span>' : '') + '</div>' +
     '<div class="fact"><button type="button" class="btn primary' + (on ? ' on' : '') + '" data-fadd="' + esc(x.id) + '">' + (on ? ADDED_TXT : ADD_TXT) + '</button><a class="btn dark" href="#p-' + esc(x.id) + '">看詳細</a></div></div></div>';
 }
 function flipStep() { var k = flipStrip.children; return k.length > 1 ? Math.max(1, k[1].offsetLeft - k[0].offsetLeft) : Math.max(1, flipStrip.clientWidth); }
@@ -1721,8 +1866,10 @@ document.addEventListener('keydown', function (e) {
 
 /* ── 頁面內點擊 ── */
 view.addEventListener('click', function (e) {
-  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-flip],#addq');
+  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-flip],[data-kind],[data-tadd],#addq');
   if (!t) return;
+  if (t.hasAttribute('data-kind')) { wallKind = t.getAttribute('data-kind'); wallReset(); redrawWall(false); return; }
+  if (t.hasAttribute('data-tadd')) { var tid = t.getAttribute('data-tadd'); if (inInq(tid)) go('q'); else { addInq(tid); live.textContent = '已加入詢價單'; } return; }
   if (t.hasAttribute('data-flip')) { flipSet(t.getAttribute('data-flip')); go('f'); return; }
   if (t.id === 'addq') { var id = t.getAttribute('data-id'); if (inInq(id)) go('q'); else addInq(id); return; }
   if (t.hasAttribute('data-lb')) { openLB(+t.getAttribute('data-lb')); return; }
@@ -1730,7 +1877,7 @@ view.addEventListener('click', function (e) {
   var act = t.getAttribute('data-act');
   if (act === 'back') goBack();
   else if (act === 'clearsearch') clearSearch();
-  else if (act === 'wallmix') { wallReset(); drawMain('home', false, true); }
+  else if (act === 'wallmix') { wallReset(); redrawWall(true); }
   else if (act === 'wallmore') wallMore();
   else if (act === 'retry') { LOAD_ERR = false; drawMain(mainHash, false, true); loadCatalog(); }
 });
