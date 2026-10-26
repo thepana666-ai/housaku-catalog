@@ -1444,6 +1444,11 @@ fback.addEventListener('click', goBack);
 var totop = document.getElementById('totop');
 function onScrollTop() { totop.classList.toggle('show', window.scrollY > window.innerHeight * 1.5); }
 window.addEventListener('scroll', onScrollTop, { passive: true });
+/* 保險（業主 2026-10-26：滑到底就直接接下一批）：IntersectionObserver 之外再用捲動位置判斷一次，離底不到 600px 就接 */
+window.addEventListener('scroll', function () {
+  if (mainHash !== 'home' || document.documentElement.classList.contains('lock')) return;
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) wallMore();
+}, { passive: true });
 totop.addEventListener('click', function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } });
 /* 手機在首頁最上面往下拉 80px 放開＝換一批（淘寶手機版的下拉）；瀏覽器自己的下拉重新整理已用 overscroll-behavior 關掉 */
 var ptr = document.getElementById('ptr'), ptrY = null, ptrD = 0, PTR_MIN = 80;
