@@ -713,7 +713,7 @@ var NAME_EN = {
   '輪胎螺絲': 'Wheel bolt', '節氣門': 'Throttle body', '空壓機供油邦浦': 'Compressor oil feed pump', '觸煤': 'Catalytic converter', '克拉子分邦總成': 'Clutch slave cylinder assy',
   '乾燥劑四向閥': 'Air dryer 4-way valve', '共軌壓力感應器': 'Rail pressure sensor', '油門位置感應器': 'Accelerator position sensor', '扭力桿橡皮': 'Torque rod bush',
   '活塞': 'Piston', '方向機油壓桿總成': 'Power steering cylinder assy', '大王肖軸承': 'King pin bearing',
-  '汽缸床墊片': 'Cylinder head gasket', '汽缸套': 'Cylinder liner', '活塞環': 'Piston ring', '時規油封': 'Timing cover oil seal', '大波司': 'Main bearing', '引擎總成': 'Engine assy', '活塞連環': 'Piston ring set', '汽門頂筒': 'Valve lifter'
+  '汽缸床墊片': 'Cylinder head gasket', '汽缸套': 'Cylinder liner', '汽缸套總成': 'Cylinder liner assy', '活塞環': 'Piston ring', '時規油封': 'Timing cover oil seal', '大波司': 'Main bearing', '引擎總成': 'Engine assy', '活塞連環': 'Piston ring set', '汽門頂筒': 'Valve lifter'
 };
 function nameTxt(n) { if (!has(n)) return '—'; n = String(n).trim(); return LANG === 'en' && own(NAME_EN, n) ? NAME_EN[n] : n; }
 function nmv(n) { return has(n) ? esc(nameTxt(n)) : DASH; }
