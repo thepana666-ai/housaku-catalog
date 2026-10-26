@@ -1375,7 +1375,9 @@ function lsorted(arr, key, nameOf) {
   if (LSORT[key] !== 'az') return idx;
   return idx.sort(function (a, b) {
     var na = nameOf(arr[a]), nb = nameOf(arr[b]);
-    return ((na === OTHER) - (nb === OTHER)) || cmp(na, nb);
+    /* 英文字母的廠牌排前面、中文名（韓國車）排後面、「其他」永遠最後 */
+    var la = /^[A-Za-z0-9]/.test(na) ? 0 : 1, lb = /^[A-Za-z0-9]/.test(nb) ? 0 : 1;
+    return ((na === OTHER) - (nb === OTHER)) || (la - lb) || cmp(na, nb);
   });
 }
 function vSeries() {
