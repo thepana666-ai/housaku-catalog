@@ -109,18 +109,20 @@ h1,h2{text-wrap:balance}
 .hdrow .homebtn[hidden]+.themebtn{margin-left:auto}
 /* 日夜鈕：亮的時候顯示月亮（按了變暗）、暗的時候顯示太陽 */
 /* 正圓（業主 2026-10-27：月亮那顆變橢圓）：寬＝高固定，圖示置中，跟月亮太陽字寬無關 */
-.themebtn{display:inline-grid;place-items:center;width:2.4rem;height:2.4rem;min-height:2.4rem;padding:0;border-radius:50%;font-size:1.15rem;line-height:1}
+.themebtn{display:inline-grid;place-items:center;width:var(--hb);height:var(--hb);min-height:var(--hb);padding:0;border-radius:50%;font-size:1.05rem;line-height:1}
 .themebtn .sun{display:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .themebtn .sun{display:inline}:root:not([data-theme="light"]) .themebtn .moon{display:none}}
 :root[data-theme="dark"] .themebtn .sun{display:inline}:root[data-theme="dark"] .themebtn .moon{display:none}
 :root[data-theme="light"] .themebtn .sun{display:none}:root[data-theme="light"] .themebtn .moon{display:inline}
 @media (max-width:479px){html[lang=en] .shop small{display:none}}
 /* 右上語言切換（業主 2026-10-26 第 11 點）：顯示「另一個語言」的名字 */
-.langbtn{flex:none;min-height:2.4rem;padding:0 .7rem;border:1.5px solid var(--head-muted);border-radius:999px;background:transparent;color:var(--head-ink);font-weight:700;font-size:.9rem;cursor:pointer}
+.langbtn{flex:none;height:var(--hb);min-height:var(--hb);padding:0 .7rem;border:1.5px solid var(--head-muted);border-radius:999px;background:transparent;color:var(--head-ink);font-weight:700;font-size:.9rem;cursor:pointer}
 .hlogo-wrap{flex:none;display:inline-flex}
-.hlogo-wrap svg{display:block;width:1.65rem;height:1.65rem;border-radius:4px}
+/* 表頭 logo 與右上三顆鈕同一個高度 --hb，上下切齊（業主 2026-10-27：鈕太靠下面） */
+.top{--hb:2.15rem}
+.hlogo-wrap svg{display:block;width:var(--hb);height:var(--hb);border-radius:5px}
 /* 內頁表頭常駐「⌂ 首頁」（業主 2026-10-26 第 7 點：點進去的內頁上方要有回首頁） */
-.homebtn{display:inline-flex;align-items:center;min-height:2.4rem;padding:0 .75rem;border-radius:999px;background:var(--brass);color:var(--on-brass);font-weight:700;font-size:.95rem;text-decoration:none;white-space:nowrap}
+.homebtn{display:inline-flex;align-items:center;height:var(--hb);min-height:var(--hb);padding:0 .75rem;border-radius:999px;background:var(--brass);color:var(--on-brass);font-weight:700;font-size:.95rem;text-decoration:none;white-space:nowrap}
 .search{position:relative;margin:0}
 .search svg{position:absolute;left:.75rem;top:50%;width:1.15rem;height:1.15rem;transform:translateY(-50%);color:var(--field-ph);pointer-events:none}
 .search input{display:block;width:100%;height:52px;border:2px solid var(--search-line);border-radius:6px;background:var(--field);color:var(--field-ink);padding:0 4.4rem 0 2.4rem;font-size:1.05rem;-webkit-appearance:none;appearance:none}
@@ -259,6 +261,13 @@ html.lock .totop{display:none}
 .contact dd>span.sel{display:inline-flex;align-items:center;min-height:48px}
 .contact a.tl{display:inline-flex;align-items:center;min-height:48px;color:var(--brass-ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.22em}
 .contact .btn{font-family:var(--font-body);letter-spacing:0}
+/* 每一列右邊的鈕一律靠右切齊（業主 2026-10-27：手機、電腦都要）；字太長折行時鈕也在右邊 */
+.contact dd>.btn{margin-left:auto;flex:none;width:6.2em;min-width:0;padding-inline:.3rem;justify-content:center;white-space:nowrap}  /* 四顆一樣寬：左右緣都對齊 */
+/* 有按鈕的列＝「值｜按鈕」兩欄，按鈕永遠跟值同一行靠右；值太長在自己欄內折行（手機信箱、地址） */
+.contact dd:has(>.btn){display:grid;grid-template-columns:minmax(0,1fr) 6.2em;column-gap:.6rem}
+/* 手機：信箱不准從中間斷開；按鈕窄一點讓值放得下 */
+.contact a.tl[href^="mailto:"]{white-space:nowrap}
+@media (max-width:479px){.contact{column-gap:.7rem}.contact dd{font-size:.98rem;letter-spacing:0}.contact dd>.btn{width:5.4em}.contact dd:has(>.btn){grid-template-columns:minmax(0,1fr) 5.4em;column-gap:.5rem}}
 .upd{margin:1rem 0 0;color:var(--muted);font-size:.95rem}
 .upd b{color:var(--ink);font-family:var(--font-code);font-weight:600}
 
@@ -499,6 +508,7 @@ html.lock .fback{display:none}
 .qact .big{min-height:4rem;font-size:1.12rem}
 .qnote{margin:-.3rem 0 0;color:var(--muted);font-size:.92rem;line-height:1.45}
 /* 加好友：說明那一行裡的文字連結（不是第三顆大鈕）；點擊範圍仍 ≥48px */
+#qaddWrap:not([hidden]){display:block}  /* 「還不是好友？」自己一行（業主 2026-10-27） */
 .qadd{display:inline-flex;align-items:center;min-height:48px;color:var(--brass-ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.22em}
 .btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
 .qmore{border-top:1px solid var(--line);margin-top:.3rem}
@@ -513,6 +523,7 @@ html.lock .fback{display:none}
 .qmail>.btn{min-width:0}
 .msg{min-height:1.5em;margin:0;color:var(--brass-ink);font-weight:700}
 .msg:empty{min-height:0}
+#qcopy .sub{display:block;font-size:.85rem;font-weight:500;opacity:.85;margin-top:.15rem}
 .qmore textarea{width:100%;min-height:8rem;padding:.6rem;border:2px solid var(--brass);border-radius:6px;background:var(--field);color:var(--field-ink);font-size:.95rem;line-height:1.5;resize:vertical}
 
 @media (prefers-reduced-motion:reduce){.fcard{transition:none}}
@@ -574,11 +585,11 @@ html.lock .fback{display:none}
       <a class="btn primary big" id="qline" target="_blank" rel="noopener" hidden data-i18n="q_line">用 LINE 傳給我們</a>
       <p class="qnote" id="qlineNote" hidden><span data-i18n="q_line_note">會打開 LINE → 選「禾賀」→ 按傳送</span><span id="qaddWrap" hidden><span data-i18n="q_not_friend">。還不是好友？</span><a class="qadd" id="qadd" target="_blank" rel="noopener" data-i18n="q_add_first">先按這裡加好友</a></span></p>
       <a class="btn dark big" id="qtel" hidden><span style="white-space:nowrap" data-i18n="call">打電話</span> <span class="tel" id="qtelTxt"></span></a>
-      <details class="qmore" id="qmore">
+      <details class="qmore" id="qmore" open>
         <summary data-i18n="q_other">其他方式</summary>
         <div class="qmore-body">
-          <button type="button" class="btn dark" id="qcopy" data-i18n="q_copy">複製詢價內容</button>
-          <p class="qnote" id="qcopyNote" hidden data-i18n="q_copy_note">打不開 LINE 時，複製後貼到 LINE 也可以</p>
+          <button type="button" class="btn dark stack" id="qcopy"><span data-i18n="q_copy">複製詢價內容</span><span class="sub" data-i18n="q_copy_sub">直接貼到 LINE 對話視窗</span></button>
+          <span id="qcopyNote" hidden></span>
           <p class="msg" id="qmsg" role="status" aria-live="polite"></p>
           <textarea id="qtext" readonly hidden aria-label="詢價內容" data-i18n-aria="q_text_aria"></textarea>
           <a class="btn dark stack" id="qwa" target="_blank" rel="noopener" hidden><span data-i18n="q_wa">用 WhatsApp 傳給我們</span><span class="tel" id="qwaTxt"></span></a>
@@ -642,11 +653,11 @@ var I18N = {
     same_car: '同車種', still_has: '還有', same_name: '同品名', other_cars_has: '其他車種還有', missing: '找不到這個商品',
     add: '加入詢價單', added: '看詢價單 ›', added_live: '已加入詢價單', copied: '已複製', longpress: '請長按選取',
     qbar_none: '還沒選零件', qbar_n: '詢價單<span class="qn">{n}</span>項', sheet_title: '詢價單', sheet_title_after: '項', sheet_clear: '清空', sheet_close: '關閉',
-    q_line: '用 LINE 傳給我們', q_line_note: '會打開 LINE → 選「禾賀」→ 按傳送', q_not_friend: '。還不是好友？', q_add_first: '先按這裡加好友', q_other: '其他方式', q_copy: '複製詢價內容', q_copy_note: '打不開 LINE 時，複製後貼到 LINE 也可以',
+    q_line: '用 LINE 傳給我們', q_line_note: '會打開 LINE → 選「禾賀」→ 按傳送', q_not_friend: '還不是好友？', q_add_first: '先按這裡加好友', q_other: '其他方式', q_copy: '複製詢價內容', q_copy_sub: '直接貼到 LINE 對話視窗', q_copy_note: '打不開 LINE 時，複製後貼到 LINE 也可以',
     q_wa: '用 WhatsApp 傳給我們', q_mail: '用 Email 寄給我們', q_mail_copy: '複製信箱', q_text_aria: '詢價內容', remove: '移除', remove_aria: '移除 {n}',
     cleared_n: '已清空 {n} 項・', removed_x: '已移除 {x}・', undo: '復原', live_cleared: '已清空，5 秒內可按復原', live_restored: '已復原', live_removed: '已移除，5 秒內可按復原',
     sel_copy: '已選取，請長按「拷貝」', copied_line: '已複製，貼到 LINE 給我們就好', copied_msg: '已複製，貼到訊息裡傳給我們就好', copied_mail: '已複製信箱 ', longpress_mail: '請長按信箱文字選取',
-    theme_label: '切換深淺色', sort_count: '項數', sort_az: '字母', list_sort: '排序', c_addr: '地址',
+    theme_label: '切換深淺色', c_map: '地圖', sort_count: '項數', sort_az: '字母', list_sort: '排序', c_addr: '地址',
     other: '其他', crumbs_aria: '目前位置', sep: '、', korean: '韓國車', lb_aria: '照片放大', lb_hint: '點兩下放大・兩指可縮放・手機橫拿看更大'
   },
   en: {
@@ -663,17 +674,17 @@ var I18N = {
     recent: 'Recently viewed', photos_n: '{n} photos', only_left: 'Only {n} left', stock_: 'Stock ', t_add: '+ Inquire', t_added: '✓ Added', t_add_aria: 'Add to inquiry', t_added_aria: 'In inquiry. View inquiry',
     chips_aria: 'Category', all: 'All', more_n: 'Show {n} more', show_all: 'Show all ({n})', wall_empty: 'No photos in this category yet', wall_done: 'You have seen all {n} items',
     sort: 'Sort', sort_rand: 'Random', sort_car: 'Model', sort_name: 'Name', with_photo: '{n} with photos',
-    hours: 'Hours ', c_tel: 'Phone', c_add: 'Add friend', c_msg: 'Message', c_mail: 'Email', copy: 'Copy', upd: 'Updated <b>{d}</b> · ', upd_note: 'Stock is confirmed by phone',
+    hours: 'Hours ', c_tel: 'Phone', c_add: 'Add us', c_msg: 'Message', c_mail: 'Email', copy: 'Copy', upd: 'Updated <b>{d}</b> · ', upd_note: 'Stock is confirmed by phone',
     zoom_n: 'Zoom photo {n}', photo_n: ' photo {n}', prev: 'Previous', next: 'Next', no_photo: 'No photo yet. Please call us for a current photo.', raw_brand: 'Brand (original)',
     f_make: 'Make', f_spec: 'Spec', f_brand: 'Brand', f_year: 'Year', f_pn: 'Part no.', f_kind: 'Category', f_fits: 'Fits', f_conv: 'Conversion', conv: '<span class="code">{n}</span>&nbsp;{b} per {a}', f_ref: 'Ref.',
     same_car: 'More for', still_has: '', same_name: 'Other models with', other_cars_has: '', missing: 'Item not found',
     add: 'Add to inquiry', added: 'View inquiry ›', added_live: 'Added to inquiry', copied: 'Copied', longpress: 'Long-press to select',
     qbar_none: 'No parts selected yet', qbar_n: 'Inquiry <span class="qn">{n}</span> items', sheet_title: 'Inquiry', sheet_title_after: '', sheet_clear: 'Clear', sheet_close: 'Close',
-    q_line: 'Send via LINE', q_line_note: 'Opens LINE → choose "Housaku" → send', q_not_friend: '. Not a friend yet?', q_add_first: 'Add us first', q_other: 'Other ways', q_copy: 'Copy inquiry text', q_copy_note: 'If LINE won\'t open, copy and paste it into LINE',
+    q_line: 'Send via LINE', q_line_note: 'Opens LINE → choose "Housaku" → send', q_not_friend: 'Not a friend yet? ', q_add_first: 'Add us first', q_other: 'Other ways', q_copy: 'Copy inquiry text', q_copy_sub: 'Paste it straight into a LINE chat', q_copy_note: 'If LINE won\'t open, copy and paste it into LINE',
     q_wa: 'Send via WhatsApp', q_mail: 'Send by email', q_mail_copy: 'Copy email', q_text_aria: 'Inquiry text', remove: 'Remove', remove_aria: 'Remove {n}',
     cleared_n: 'Cleared {n} items · ', removed_x: 'Removed {x} · ', undo: 'Undo', live_cleared: 'Cleared. Undo within 5 seconds', live_restored: 'Restored', live_removed: 'Removed. Undo within 5 seconds',
     sel_copy: 'Selected. Long-press to copy', copied_line: 'Copied. Paste it to us on LINE', copied_msg: 'Copied. Paste it into a message to us', copied_mail: 'Email copied ', longpress_mail: 'Long-press the email to select it',
-    theme_label: 'Toggle light / dark', sort_count: 'Count', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
+    theme_label: 'Toggle light / dark', c_map: 'Map', sort_count: 'Count', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
     other: 'Other', crumbs_aria: 'You are here', sep: ', ', korean: 'Korean makes', lb_aria: 'Photo zoom', lb_hint: 'Double-tap to zoom · pinch to scale · turn the phone sideways for a bigger view'
   }
 };
@@ -1211,10 +1222,13 @@ function contactDl() {
   var h = '';
   if (TEL_HREF) h += '<dt>' + T('c_tel') + '</dt><dd><a class="tl" href="' + esc(TEL_HREF) + '">' + esc(TEL_TXT) + '</a></dd>';
   if (LINE_ADD) h += '<dt>LINE ID</dt><dd><span class="sel">' + esc(LINE_ID) + '</span><a class="btn small line" href="' + esc(LINE_ADD) + '" target="_blank" rel="noopener">' + T('c_add') + '</a></dd>';
-  if (WA_BASE) h += '<dt>WhatsApp</dt><dd><span class="sel">' + esc(WA_TXT) + '</span><a class="btn small line" href="' + esc(WA_BASE) + '" target="_blank" rel="noopener">' + T('c_msg') + '</a></dd>';
+  /* WhatsApp 號碼＝業主手機：號碼本身點了直接撥號（業主 2026-10-27），右邊鈕照舊開 WhatsApp */
+  var waTel = telHref(WA_RAW);
+  if (WA_BASE) h += '<dt>WhatsApp</dt><dd>' + (waTel ? '<a class="tl" href="' + esc(waTel) + '">' + esc(WA_TXT) + '</a>' : '<span class="sel">' + esc(WA_TXT) + '</span>') + '<a class="btn small line" href="' + esc(WA_BASE) + '" target="_blank" rel="noopener">' + T('c_msg') + '</a></dd>';
   if (EMAIL) h += '<dt>' + T('c_mail') + '</dt><dd><a class="tl sel" href="' + esc(mailHref('')) + '">' + esc(EMAIL) + '</a><button type="button" class="btn small line" data-copy="' + esc(EMAIL) + '">' + T('copy') + '</button></dd>';
   var addr = addressTxt();
-  if (addr) h += '<dt>' + T('c_addr') + '</dt><dd><span class="sel">' + esc(addr) + '</span><button type="button" class="btn small line" data-copy="' + esc(addr) + '">' + T('copy') + '</button></dd>';
+  /* 地址：複製鈕改成「地圖」，開 Google 地圖（業主 2026-10-27）；地圖一律用中文地址查，英文版也準 */
+  if (addr) h += '<dt>' + T('c_addr') + '</dt><dd><span class="sel">' + esc(addr) + '</span><a class="btn small line" href="' + esc('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ADDRESS_ZH || addr)) + '" target="_blank" rel="noopener">' + T('c_map') + '</a></dd>';
   return h ? '<dl class="contact">' + h + '</dl>' : '';
 }
 /* 更新日期：中文版民國 115/10/26；英文版換西元 2026-10-26 */
