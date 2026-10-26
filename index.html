@@ -107,7 +107,7 @@ h1,h2{text-wrap:balance}
 .search svg{position:absolute;left:.75rem;top:50%;width:1.15rem;height:1.15rem;transform:translateY(-50%);color:var(--field-ph);pointer-events:none}
 .search input{display:block;width:100%;height:52px;border:2px solid var(--search-line);border-radius:6px;background:var(--field);color:var(--field-ink);padding:0 4.4rem 0 2.4rem;font-size:1.05rem;-webkit-appearance:none;appearance:none}
 .search input::placeholder{color:var(--field-ph)}
-.search input:placeholder-shown{padding-right:.8rem}  /* 空白時清除鈕不在，讓「原廠號」整段看得到 */
+.search input:placeholder-shown{padding-right:.8rem}  /* 空白時清除鈕不在，讓「料號」整段看得到 */
 .search input:focus{outline:none;border-color:var(--brass)}
 .search input::-webkit-search-cancel-button{display:none}
 .kwclear{position:absolute;right:2px;top:2px;bottom:2px;min-width:4rem;border:0;border-radius:0 4px 4px 0;background:transparent;color:var(--brass-ink);font-weight:700;font-size:.95rem}
@@ -123,15 +123,17 @@ h1,h2{text-wrap:balance}
 
 /* ── 首頁 ── */
 /* 兩顆入口永遠並排在最上面（業主 2026-10-26）；手機每顆約 170px 寬，字縮一號 */
-.entries{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.6rem}
-.entry{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"k go" "n n";gap:.1rem .5rem;align-items:center;min-height:5.4rem;padding:.8rem .8rem .75rem;background:var(--tile);color:var(--tile-ink);border-radius:8px;text-decoration:none;min-width:0}
+.entries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+.entry{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"k go" "n n";gap:.1rem .5rem;align-items:center;min-height:5.6rem;padding:.7rem .55rem .65rem;background:var(--tile);color:var(--tile-ink);border-radius:8px;text-decoration:none;min-width:0}
 .entry:active{filter:brightness(1.12)}
-.e-k{grid-area:k;font-size:1.05rem;font-weight:700;letter-spacing:.01em;min-width:0;overflow-wrap:anywhere;white-space:nowrap}
+.e-k{grid-area:k;font-size:1rem;line-height:1.25;font-weight:700;letter-spacing:.01em;min-width:0}
+.e-k span{display:inline-block}  /* 只在「照廠牌・｜車種找」這種設計好的位置折行，不會折成「照廠牌・車｜種找」 */
 .e-n{grid-area:n;color:var(--tile-muted);font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .e-n b{color:var(--brass);font-family:var(--font-code);font-size:1.15rem;font-weight:600;font-variant-numeric:tabular-nums;margin-right:.15em}
 .e-n i{display:inline-block;width:.7em}
+.e-x{display:none}  /* 手機三顆並排放不下「6 車種」，只留廠牌數；寬一點才一起顯示 */
 .e-go{grid-area:go;display:none;font-size:1.8rem;line-height:1;color:var(--brass)}
-@media (min-width:560px){.entries{gap:.8rem}.entry{min-height:6.2rem;padding:1rem 1.1rem .95rem}.e-k{font-size:1.4rem;white-space:normal}.e-n{font-size:.95rem}.e-n b{font-size:1.35rem}.e-go{display:block;font-size:2.2rem}}
+@media (min-width:560px){.e-x{display:inline}.entries{gap:.8rem}.entry{min-height:6.2rem;padding:1rem 1.1rem .95rem}.e-k{font-size:1.35rem}.e-n{font-size:.95rem}.e-n b{font-size:1.35rem}.e-go{display:block;font-size:2.2rem}}
 /* ── 首頁圖片牆：有照片的商品隨機排、每次打開都不同（淘寶式；業主 2026-10-26）。手機 2 欄、平板 3、桌機 4 ── */
 .wall-h{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t a" "n a";align-items:center;gap:0 .8rem;margin:1.1rem 0 .55rem;padding-top:.8rem;border-top:2px solid var(--rule)}
 .wall-h h2{grid-area:t;margin:0;font-size:1.2rem}
@@ -310,6 +312,10 @@ a.prow:active{background:var(--row-hover)}
 .facts dd{font-size:1.1rem;font-weight:500;min-width:0;overflow-wrap:anywhere}
 .facts dd.code{font-size:1.22rem}
 .facts dd.sel{user-select:text;-webkit-user-select:text;color:var(--muted);font-size:1.05rem}
+/* 適用車種（item_car 共用車）：每個代號一顆，有在站上的可點去那個車種 */
+.facts dd.fits{flex-wrap:wrap;gap:.3rem .45rem;padding-block:.5rem}
+.facts dd.fits a,.facts dd.fits span{display:inline-flex;align-items:center;min-height:2.2rem;padding:0 .6rem;border-radius:5px;background:var(--plate);color:var(--ink);font-family:var(--font-code);font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-decoration:none}
+.facts dd.fits a{color:var(--brass-ink);border:2px solid var(--field-line)}
 /* 品牌原字：小字（業主 Q4A「原字放小字」）；自己一列、一格一個值 */
 .facts dt.raw,.facts dd.raw{min-height:2.4rem;padding-block:.3rem}
 .facts dd.raw{color:var(--muted);font-size:.9rem;font-weight:400}
@@ -335,6 +341,10 @@ a.prow:active{background:var(--row-hover)}
 .nw{white-space:nowrap}
 
 /* ── 詢價條：左邊常駐打電話，右邊詢價單（點了打開詢價單） ── */
+.fback{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(4.6rem + env(safe-area-inset-bottom,0px));z-index:29;display:inline-flex;align-items:center;gap:.25rem;min-height:48px;padding:.35rem 1rem .35rem .75rem;border:2px solid var(--brass);border-radius:999px;background:var(--head);color:var(--head-ink);font-weight:700;font-size:1rem;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .18s,transform .18s}
+.fback .ar{font-size:1.35em;line-height:1}
+.fback.show{opacity:1;transform:none;pointer-events:auto}
+html.lock .fback{display:none}
 .qbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--head);color:var(--head-ink);border-top:3px solid var(--brass);padding-bottom:env(safe-area-inset-bottom,0px)}
 .qbar .inner{display:flex;align-items:stretch;gap:.55rem;padding-block:.4rem}
 /* 兩顆同高的鈕：打電話（深色）＋詢價單（有東西＝黃銅；0 項＝深色白字「還沒選零件」，不用灰字）。字放大時各自在鈕內折行 */
@@ -360,8 +370,10 @@ a.prow:active{background:var(--row-hover)}
 .sheet-top h2{margin:0;font-size:1.25rem}
 .sheet-top h2 b{font-family:var(--font-code);color:var(--brass);font-size:1.25em;margin-inline:.2em}
 .sheet-top .btn{background:var(--btn2);color:var(--btn2-ink)}
+.sheet-top .tools{display:flex;gap:.5rem;flex:none}
+.sheet-top .btn.warn{background:transparent;border-color:var(--brass);color:var(--brass)}
 .sheet-body{padding-block:1rem 1.6rem}
-/* 每筆三行：品名……移除 ／ 車種｜規格｜現有 ／ 編號 想要 [數量] 單位。移除鈕在品名那一行最右邊，不跟數量格同一行 */
+/* 每筆兩行：品名……移除 ／ 車種｜規格｜現有（2026-10-26 業主：不填數量、不印內部編號，之後電話談） */
 .qgrid{display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr) max-content;column-gap:.7rem;border-top:2px solid var(--rule)}
 .qrow{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;row-gap:.3rem;padding-block:.55rem;border-bottom:1px solid var(--line)}
 .qrow>*{min-width:0}
@@ -371,7 +383,6 @@ a.prow:active{background:var(--row-hover)}
 .qrow .c-spec{grid-column:2;grid-row:2;overflow-wrap:anywhere;line-height:1.3}
 .qgrid.nospec .c-car{grid-column:1/3}
 .qrow .c-qty{grid-column:3;grid-row:2}
-.qrow .qwant{grid-column:1/-1;grid-row:3}
 .qrow.qhead{padding-block:.35rem;row-gap:0;color:var(--muted);font-size:.86rem}
 .qrow.qhead .c-name,.qrow.qhead .c-car,.qrow.qhead .c-qty{font-family:var(--font-body);font-weight:500;font-size:1em;letter-spacing:0}
 .q-rm{display:inline-flex;align-items:center;justify-content:center;min-height:48px;min-width:48px;padding:0 .2rem;border:0;background:transparent;color:var(--brass-ink);font-weight:700;font-size:.95rem;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.22em}
@@ -454,7 +465,7 @@ a.prow:active{background:var(--row-hover)}
     <a class="shop" href="#home"><span class="nut" aria-hidden="true"></span><span id="shopName">禾賀 <small>清倉零件</small></span></a>
     <form class="search" role="search" id="searchForm">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
-      <input id="kw" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="品名、車種、原廠號" aria-label="搜尋品名、車種、原廠號">
+      <input id="kw" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="品名、車種、料號" aria-label="搜尋品名、車種、料號">
       <button type="button" class="kwclear" id="kwclear" hidden>清除</button>
     </form>
   </div></div>
@@ -465,6 +476,7 @@ a.prow:active{background:var(--row-hover)}
 
 <main class="main gut"><div class="inner" id="view"><noscript><p>這個頁面需要開啟 JavaScript 才能瀏覽。</p></noscript></div></main>
 <p class="sr" id="live" role="status" aria-live="polite"></p>
+<button type="button" class="fback" id="fback" hidden><span class="ar" aria-hidden="true">‹</span>上一頁</button>
 
 <div class="qbar zero" id="qbar"><div class="gut"><div class="inner">
   <a class="qbtel" id="qbarTel" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>打電話</a>
@@ -474,7 +486,7 @@ a.prow:active{background:var(--row-hover)}
 <div class="sheet" id="qsheet" role="dialog" aria-modal="true" aria-labelledby="qsheetTitle" hidden tabindex="-1">
   <div class="sheet-top"><div class="gut"><div class="inner">
     <h2 id="qsheetTitle">詢價單<b id="qsheetN">0</b>項</h2>
-    <button type="button" class="btn small" id="qsheetClose">關閉</button>
+    <div class="tools"><button type="button" class="btn small warn" id="qclearBtn" hidden>清空</button><button type="button" class="btn small" id="qsheetClose">關閉</button></div>
   </div></div></div>
   <div class="sheet-body gut"><div class="inner">
     <div id="qsheetList"></div>
@@ -513,7 +525,7 @@ a.prow:active{background:var(--row-hover)}
 </div>
 
 <script id="data" type="application/json">{"n":8,"np":6,"brands":2,"cars":8,"names":7,"wall":[{"id":"dd556abxmf","name":"噴油嘴總成","car_code":"6M60-3AT","ph":"dd556abxmf-1.jpg"},{"id":"exccpax77k","name":"噴油邦浦","car_code":"JO8E","ph":"exccpax77k-1.jpg"},{"id":"kqcm48pjm6","name":"機油冷卻器","car_code":"4D33","ph":"kqcm48pjm6-1.jpg"},{"id":"la7yx5tyr3","name":"煞車繼動閥","car_code":"HINO","ph":"la7yx5tyr3-1.jpg"},{"id":"my70w6nj1x","name":"電動邦浦","car_code":"0","ph":"my70w6nj1x-1.jpg"},{"id":"xapxylk5tx","name":"排氣煞車","car_code":"P11C","ph":"xapxylk5tx-1.jpg"}]}</script>
-<script id="site" type="application/json">{"name":"禾賀 清倉零件","phone":"04-2220-0119","phone_e164":"+886422200119","line_id":"22200119","email":"tory@housaku.co","whatsapp":"+886905253456","domain":"housaku.tw","address":"台中市南區愛國街16號","hours":"","reply_note":"","noindex":true,"search_aliases":{"series":{"FUSO":["三菱","扶桑","三菱扶桑"],"ISUZU":["五十鈴"],"HINO":["日野"],"NISSAN(UD)":["日產","優迪","UD"],"TOYOTA":["豐田"],"KOMATSU":["小松"],"KUBOTA":["久保田"],"YANMAR":["洋馬"],"CUMMINS":["康明斯"],"VOLVO":["富豪"],"MAZDA":["馬自達"],"SCANIA":["速克達","斯堪尼亞"],"韓國車":["現代","起亞"]},"name_syn":[["汽缸墊","汽缸床墊片"],["汽缸蓋墊","汽缸蓋墊片"],["墊片組","修包"]]},"brand_classes":{"正廠":"正廠","TWN":"台灣製","台灣":"台灣製","日本":"日本副廠","日本製":"日本副廠","中古":"中古","外匯":"中古"}}</script>
+<script id="site" type="application/json">{"name":"禾賀 清倉零件","phone":"04-2220-0119","phone_e164":"+886422200119","line_id":"22200119","email":"tory@housaku.co","whatsapp":"+886905253456","domain":"housaku.tw","address":"台中市南區愛國街16號","hours":"","reply_note":"","noindex":true,"search_aliases":{"series":{"FUSO":["三菱","扶桑","三菱扶桑"],"ISUZU":["五十鈴"],"HINO":["日野"],"NISSAN(UD)":["日產","優迪","UD"],"TOYOTA":["豐田"],"KOMATSU":["小松"],"KUBOTA":["久保田"],"YANMAR":["洋馬"],"CUMMINS":["康明斯"],"VOLVO":["富豪"],"MAZDA":["馬自達"],"SCANIA":["速克達","斯堪尼亞"],"韓國車":["現代","起亞"]},"name_syn":[["汽缸墊","汽缸床墊片"],["汽缸蓋墊","汽缸蓋墊片"],["墊片組","修包"]]},"brand_classes":{"正廠":"正廠","TWN":"台灣製","台灣":"台灣製","日本":"日本副廠","日本製":"日本副廠","中古":"中古"}}</script>
 <script>
 (function(){
 'use strict';
@@ -601,10 +613,10 @@ if (SITE_NAME) {
 /* 分享預覽（og:url／og:image）：發布器組站時已直接寫成網域絕對網址（爬蟲不跑程式），這裡不再改，見 README §5 */
 if (!LINE_ID) document.getElementById('step3').textContent = (TEL_HREF ? '打電話或傳訊息給我們' : '傳訊息給我們') + '，我們回你價錢';
 
-/* ── 品牌歸類：清單與商品頁顯示類別（業主拍板的四類：正廠／日本副廠／台灣製／中古），原字在商品頁另一列小字。
+/* ── 品牌歸類：清單與商品頁顯示類別（業主拍板的四類：正廠／日本副廠／台灣製／中古；2026-10-26 業主：「外匯就是外匯」→ 外匯照原字），原字在商品頁另一列小字。
    站台設定 brand_classes（原字 → 類別）有給就整組用設定的，沒給才用內建。
    比對只認「整字相同」（全形半形統一、去頭尾空白、不分大小寫）；對不到就照原字顯示，不猜（「正廠(外匯)」「外匯新」這類由業主拍板後寫進設定） ── */
-var DEFAULT_BRAND_CLASSES = { '正廠': '正廠', 'TWN': '台灣製', '台灣': '台灣製', '日本': '日本副廠', '日本製': '日本副廠', '中古': '中古', '外匯': '中古' };
+var DEFAULT_BRAND_CLASSES = { '正廠': '正廠', 'TWN': '台灣製', '台灣': '台灣製', '日本': '日本副廠', '日本製': '日本副廠', '中古': '中古' };
 function bnorm(s) { return String(s || '').normalize('NFKC').trim().toUpperCase(); }
 var BRAND_RULES = (function (v) {
   var out = [];
@@ -639,7 +651,10 @@ function brandClass(raw) {
 function brandCell(x) { return has(x.brand) ? esc(brandClass(x.brand)) : DASH; }
 
 /* ── 分組：廠牌（依件數）→ 車種（依代號）；品名。全部在 initData 裡做（資料是背景載入的） ── */
-var SERIES = [], ORDER = [], NAMES = [], byId = new Map(), PHOTO_ITEMS = [], nCarCodes = 0, nBrands = 0;
+var SERIES = [], ORDER = [], NAMES = [], KINDS = [], CAR_AT = new Map(), byId = new Map(), PHOTO_ITEMS = [], nCarCodes = 0, nBrands = 0;
+/* 類別四分法（工作站 part-class.ts；資料的 cls 欄）。順序＝業主說的順序，其他最後 */
+var KIND_ORDER = ['引擎類', '底盤類', '電裝類', '傳動類', '其他'];
+function kindOf(x) { return has(x.cls) && KIND_ORDER.indexOf(String(x.cls)) >= 0 ? String(x.cls) : '其他'; }
 function hasPhoto(x) { return !!(x.photos && x.photos.length); }
 function sorted(arr) { return arr.slice().sort(function (a, b) { return a._o - b._o; }); }
 function initData(items) {
@@ -659,7 +674,7 @@ function initData(items) {
     s.cars = Array.from(m, function (e) { return { code: e[0], items: e[1] }; }).sort(function (a, b) {
       return ((a.code === '') - (b.code === '')) || cmp(a.code, b.code);
     });
-    s.cars.forEach(function (c, ci) { c.items.forEach(function (x) { x._si = si; x._ci = ci; }); });
+    s.cars.forEach(function (c, ci) { c.items.forEach(function (x) { x._si = si; x._ci = ci; }); if (c.code && !CAR_AT.has(c.code)) CAR_AT.set(c.code, { si: si, ci: ci }); });
   });
   /* 有照片排前（業主 2026-10-26 拍板 3A）：同一車種裡先有照片、再沒照片，其餘照品名、品牌 */
   ORDER = DATA.slice().sort(function (a, b) {
@@ -671,6 +686,15 @@ function initData(items) {
   DATA.forEach(function (x) { var k = has(x.name) ? x.name : ''; if (!nameMap.has(k)) nameMap.set(k, []); nameMap.get(k).push(x); });
   NAMES = Array.from(nameMap, function (e) { return { name: e[0], items: e[1] }; }).sort(function (a, b) {
     return (b.items.length - a.items.length) || cmp(a.name, b.name);
+  });
+  /* 類別 → 品名 → 商品（#k、#k-i、#k-i-j）；品名順序與「照零件名稱找」一樣（件數多的在前） */
+  var kindMap = new Map();
+  DATA.forEach(function (x) { var k = kindOf(x); if (!kindMap.has(k)) kindMap.set(k, []); kindMap.get(k).push(x); });
+  KINDS = KIND_ORDER.filter(function (k) { return kindMap.has(k); }).map(function (k) {
+    var items = kindMap.get(k), nm = new Map();
+    items.forEach(function (x) { var n = has(x.name) ? x.name : ''; if (!nm.has(n)) nm.set(n, []); nm.get(n).push(x); });
+    var names = Array.from(nm, function (e) { return { name: e[0], items: e[1] }; }).sort(function (a, b) { return (b.items.length - a.items.length) || cmp(a.name, b.name); });
+    return { label: k, items: items, names: names };
   });
   nCarCodes = new Set(DATA.filter(function (x) { return has(x.car_code); }).map(function (x) { return x.car_code; })).size;
   nBrands = SERIES.filter(function (s) { return s.name !== OTHER; }).length;
@@ -684,7 +708,7 @@ function initData(items) {
 
 function uniq(arr) { var seen = new Set(), out = []; arr.forEach(function (v) { if (has(v) && !seen.has(v)) { seen.add(v); out.push(v); } }); return out; }
 
-/* ── 搜尋：品名／車種／廠牌（含中文別名）／規格／品牌（原字與類別）／原廠號／編號。
+/* ── 搜尋：品名／車種／廠牌（含中文別名）／規格／品牌（原字與類別）／料號／編號。
    正規化：全形轉半形、不分大小寫、去 - 與空白、英文 O 當數字 0、機→机、幫→邦、
    去掉「有沒有」「嗎」「的」「要」「找」、緊貼英數的中文數字轉阿拉伯數字（K四E → K4E） ── */
 var CN_DIGIT = { '零': '0', '〇': '0', '一': '1', '二': '2', '三': '3', '四': '4', '五': '5', '六': '6', '七': '7', '八': '8', '九': '9', '十': '10' };
@@ -1023,9 +1047,11 @@ function wallMore() {
 }
 function vHome() {
   var n = READY ? DATA.length : num(META.n), nb = READY ? nBrands : num(META.brands), nc = READY ? nCarCodes : num(META.cars), nn = READY ? NAMES.length : num(META.names);
+  var nk = READY ? KINDS.filter(function (k) { return k.label !== '其他'; }).length : 4;
   return '<div class="entries">' +
-    '<a class="entry" href="#s"><span class="e-k">照廠牌・車種找</span><span class="e-n"><b>' + fmtN(nb) + '</b>廠牌<i></i><b>' + fmtN(nc) + '</b>車種</span><span class="e-go" aria-hidden="true">›</span></a>' +
-    '<a class="entry" href="#n"><span class="e-k">照零件名稱找</span><span class="e-n"><b>' + fmtN(nn) + '</b>品名</span><span class="e-go" aria-hidden="true">›</span></a>' +
+    '<a class="entry" href="#s"><span class="e-k"><span>照廠牌・</span><span>車種找</span></span><span class="e-n"><b>' + fmtN(nb) + '</b>廠牌<span class="e-x"><i></i><b>' + fmtN(nc) + '</b>車種</span></span><span class="e-go" aria-hidden="true">›</span></a>' +
+    '<a class="entry" href="#n"><span class="e-k"><span>照零件</span><span>名稱找</span></span><span class="e-n"><b>' + fmtN(nn) + '</b>品名</span><span class="e-go" aria-hidden="true">›</span></a>' +
+    '<a class="entry" href="#k"><span class="e-k"><span>照類別找</span></span><span class="e-n"><b>' + fmtN(nk) + '</b>類</span><span class="e-go" aria-hidden="true">›</span></a>' +
     '</div>' + wallHtml() +
     '<a class="allrow" href="#all"><span>全部商品</span><span class="c">共 <b>' + fmtN(n) + '</b> 項</span><span class="go" aria-hidden="true">›</span></a>' +
     storeInfo() + contactDl() + updLine();
@@ -1069,6 +1095,28 @@ function vNameItems(ni) {
   return lhead([{ t: '照零件名稱找', href: '#n' }, { t: n.name ? esc(n.name) : '—' }], items.length, '項', items.filter(hasPhoto)) + plist(items);
 }
 function vAll() { return lhead([{ t: '全部商品' }], ORDER.length, '項', PHOTO_ITEMS) + plist(ORDER, { mode: 'grouped' }); }
+/* 照類別找：類別 → 品名 → 商品（業主 2026-10-26「要加」） */
+function vKinds() {
+  var h = lhead([{ t: '照類別找' }], KINDS.length, '類') + '<div class="nlist two">';
+  KINDS.forEach(function (k, ki) {
+    h += '<a class="nrow" href="#k-' + ki + '"><span class="k">' + esc(k.label) + '</span><span class="c"><b>' + k.items.length + '</b>項</span><span class="p">' +
+      k.names.slice(0, 14).map(function (n) { return n.name ? esc(n.name) : '—'; }).join('、') + '</span></a>';
+  });
+  return h + '</div>';
+}
+function vKindNames(ki) {
+  var k = KINDS[ki];
+  var h = lhead([{ t: '照類別找', href: '#k' }, { t: esc(k.label) }], k.names.length, '品名') + '<div class="nlist two">';
+  k.names.forEach(function (n, ni) {
+    h += '<a class="nrow" href="#k-' + ki + '-' + ni + '"><span class="k">' + (n.name ? esc(n.name) : '—') + '</span><span class="c"><b>' + n.items.length + '</b>項</span><span class="p code">' +
+      uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(esc).join(' · ') + '</span></a>';
+  });
+  return h + '</div>';
+}
+function vKindItems(ki, ni) {
+  var k = KINDS[ki], n = k.names[ni], items = sorted(n.items);
+  return lhead([{ t: '照類別找', href: '#k' }, { t: esc(k.label), href: '#k-' + ki }, { t: n.name ? esc(n.name) : '—' }], items.length, '項', items.filter(hasPhoto)) + plist(items);
+}
 function vFind() {
   var q = kw.value;
   var res = search(q);
@@ -1089,7 +1137,7 @@ function vFind() {
     if (TEL_HREF) b += '<a class="btn dark" href="' + esc(TEL_HREF) + '">打電話 <span class="tel">' + esc(TEL_TXT) + '</span></a>';
     return head + '<div class="empty"><p>網站上找不到</p><div class="row">' + b + '</div>' +
       '<p class="hint">倉庫還有很多沒放上網，問一下就知道</p>' +
-      '<div class="row more"><a class="btn line small" href="#s">照廠牌・車種找</a><a class="btn line small" href="#n">照零件名稱找</a></div></div>';
+      '<div class="row more"><a class="btn line small" href="#s">照廠牌・車種找</a><a class="btn line small" href="#n">照零件名稱找</a><a class="btn line small" href="#k">照類別找</a></div></div>';
   }
   return head + plist(res, { mode: 'grouped' });
 }
@@ -1116,20 +1164,31 @@ function vProduct(x) {
       (TEL_HREF ? '<a class="btn dark" href="' + esc(TEL_HREF) + '"><span>打電話</span><span class="tel">' + esc(TEL_TXT) + '</span></a>' : '') +
     '</div></div>' +
     '<dl class="facts">' +
+      '<dt>廠牌</dt><dd>' + seriesLabel(s.name) + '</dd>' +
       '<dt>規格</dt><dd>' + val(x.spec) + '</dd>' +
       '<dt>品牌</dt><dd>' + (bc ? esc(bc) : DASH) + '</dd>' + rawBrand +
-      '<dt>原廠號</dt><dd class="code">' + val(x.part_no) + '</dd>' +
-      '<dt>期別</dt><dd>' + (has(x.stage) ? esc(x.stage) + ' 期' : DASH) + '</dd>' + convRow(x) +
+      '<dt>料號</dt><dd class="code">' + val(x.part_no) + '</dd>' +
+      '<dt>類別</dt><dd>' + esc(kindOf(x)) + '</dd>' +
+      fitsRow(x) + convRow(x) +
       '<dt>編號</dt><dd class="code sel">' + val(x.code) + '</dd>' +
     '</dl></div></div>' +
     '<section class="rel"><h2>同車種還有<span class="n"><b>' + same.length + '</b> 項</span></h2>' + (same.length ? plist(same, { mode: 'bycar' }) : '<p class="none">—</p>') + '</section>' +
     '<section class="rel"><h2>其他車種的同品名<span class="n"><b>' + other.length + '</b> 項</span></h2>' + (other.length ? plist(other) : '<p class="none">—</p>') + '</section>';
 }
+/* 適用車種（item_car 共用車；資料的 fits 欄）：站上有那個車種就可點過去 */
+function fitsRow(x) {
+  var fits = Array.isArray(x.fits) ? x.fits.filter(has) : [];
+  if (!fits.length) return '';
+  return '<dt>適用車種</dt><dd class="fits">' + fits.map(function (c) {
+    var at = CAR_AT.get(c);
+    return at ? '<a href="#c-' + at.si + '-' + at.ci + '">' + esc(c) + '</a>' : '<span>' + esc(c) + '</span>';
+  }).join('') + '</dd>';
+}
 function vMissing() {
   return '<div class="empty"><p>找不到這個商品</p><div class="row"><a class="btn dark" href="#home">回首頁</a></div></div>';
 }
 
-/* ── 路由（#home #s #s-1 #c-1-2 #n #n-3 #all #find #p-xxxx #q） ── */
+/* ── 路由（#home #s #s-1 #c-1-2 #n #n-3 #k #k-1 #k-1-2 #all #find #p-xxxx #q #f） ── */
 var view = document.getElementById('view');
 var kw = document.getElementById('kw');
 var kwclear = document.getElementById('kwclear');
@@ -1150,6 +1209,9 @@ function parse(h) {
   if ((m = /^c-(\d+)-(\d+)$/.exec(h)) && SERIES[+m[1]] && SERIES[+m[1]].cars[+m[2]]) return { v: 'car', si: +m[1], ci: +m[2] };
   if (h === 'n') return { v: 'n' };
   if ((m = /^n-(\d+)$/.exec(h)) && NAMES[+m[1]]) return { v: 'name', ni: +m[1] };
+  if (h === 'k') return { v: 'k' };
+  if ((m = /^k-(\d+)$/.exec(h)) && KINDS[+m[1]]) return { v: 'kind', ki: +m[1] };
+  if ((m = /^k-(\d+)-(\d+)$/.exec(h)) && KINDS[+m[1]] && KINDS[+m[1]].names[+m[2]]) return { v: 'kindname', ki: +m[1], ni: +m[2] };
   if (h === 'all') return { v: 'all' };
   if (h === 'find') return { v: 'find' };
   if ((m = /^p-([a-z0-9]+)$/.exec(h))) return { v: 'p', item: byId.get(m[1]) || null };
@@ -1168,6 +1230,9 @@ function drawMain(h, back, force) {
     case 'car': html = vCarItems(r.si, r.ci); break;
     case 'n': html = vNames(); break;
     case 'name': html = vNameItems(r.ni); break;
+    case 'k': html = vKinds(); break;
+    case 'kind': html = vKindNames(r.ki); break;
+    case 'kindname': html = vKindItems(r.ki, r.ni); break;
     case 'all': html = vAll(); break;
     case 'find': html = vFind(); break;
     case 'p': curItem = r.item; html = r.item ? vProduct(r.item) : vMissing(); break;
@@ -1176,6 +1241,7 @@ function drawMain(h, back, force) {
   view.innerHTML = html;
   mainHash = h;
   if (!force) window.scrollTo(0, back ? (scrolls.get(h) || 0) : 0);
+  watchBack();
   var strip = document.getElementById('pstrip'), n = document.getElementById('pshotn');
   if (strip && n) strip.addEventListener('scroll', function () {
     var first = strip.firstElementChild;
@@ -1234,6 +1300,21 @@ function onDataReady(items) {
   updateBar(); setLinks(); updateAddBtn(); refreshMarks();
 }
 function onDataFail() { if (PENDING) drawMain(mainHash, false, true); }
+/* 浮動「上一頁」（業主 2026-10-26 第 5 點）：頁面上方那顆「← 回上一頁」捲出畫面後，左下角浮一顆，不用捲回去 */
+var fback = document.getElementById('fback'), fbackObs = null;
+function watchBack() {
+  if (fbackObs) { fbackObs.disconnect(); fbackObs = null; }
+  fback.classList.remove('show');
+  var b = view.querySelector('.btn.back');
+  fback.hidden = !b;
+  if (!b || !window.IntersectionObserver) return;
+  fbackObs = new IntersectionObserver(function (en) {
+    var e = en[0];
+    fback.classList.toggle('show', !e.isIntersecting && e.boundingClientRect.bottom < 0);
+  }, { threshold: 0 });
+  fbackObs.observe(b);
+}
+fback.addEventListener('click', goBack);
 function goBack() {
   if (stack.length > 1) history.back();
   else { stack = []; location.hash = 'home'; }
@@ -1242,8 +1323,8 @@ function go(h) { if (curHash() === h) onNav(); else location.hash = h; }
 
 /* ── 搜尋框 ── */
 function setKw(v) { kw.value = v; kwclear.hidden = !v; if (!v) fitPh(); }
-/* 提示字：放得下就用完整「品名、車種、原廠號」；窄（字放大、頁面縮放）就換短的，不讓尾巴被切掉 */
-var PH = ['品名、車種、原廠號', '品名、車種、料號', '品名、車種'], phCtx = null;
+/* 提示字：放得下就用「品名、車種、料號」（2026-10-26 業主：原廠號改叫料號）；窄（字放大、頁面縮放）就換短的，不讓尾巴被切掉 */
+var PH = ['品名、車種、料號', '品名、車種'], phCtx = null;
 function fitPh() {
   if (kw.value) return;
   var cs = getComputedStyle(kw), room = kw.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -1352,8 +1433,10 @@ function setLinks() {
 var UNDO = null;
 function undoRow() {
   if (!UNDO) return '';
-  var x = byId.get(UNDO.e.id);
-  return '<div class="qundo" role="row"><span class="t" role="cell">已移除 ' + val(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(x.car_code) + '</span>' : '') + '・</span>' +
+  var t;
+  if (UNDO.all) t = '已清空 ' + UNDO.all.length + ' 項・';
+  else { var x = byId.get(UNDO.e.id); t = '已移除 ' + val(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(x.car_code) + '</span>' : '') + '・'; }
+  return '<div class="qundo" role="row"><span class="t" role="cell">' + t + '</span>' +
     '<button type="button" class="btn small line" data-undo="1">復原</button></div>';
 }
 function clearUndo() {
@@ -1365,6 +1448,7 @@ function clearUndo() {
 function drawSheet() {
   updateBar();
   qcopy.disabled = INQ.length === 0 || !READY;
+  qclearBtn.hidden = INQ.length === 0 || !READY;
   setLinks();
   if (!READY) { sheetList.innerHTML = '<p class="qempty">' + (LOAD_ERR ? '商品資料載入失敗，請檢查網路後重新整理' : '正在載入商品資料…') + '</p>'; return; }
   if (!INQ.length) { sheetList.innerHTML = '<p class="qempty">還沒選零件</p>' + (UNDO ? '<div class="qgrid">' + undoRow() + '</div>' : ''); return; }
@@ -1373,24 +1457,23 @@ function drawSheet() {
     '<span class="c-car" role="columnheader">車種</span>' + (withSpec ? '<span class="c-spec" role="columnheader">規格</span>' : '') + '<span class="c-qty" role="columnheader">現有</span></div>';
   INQ.forEach(function (e, i) {
     if (UNDO && UNDO.i === i) h += undoRow();
-    var x = byId.get(e.id), fid = 'want-' + esc(x.id);
+    var x = byId.get(e.id);
     h += '<div class="qrow" role="row">' +
       '<span class="c-name" role="cell">' + val(x.name) + '</span>' +
       '<button type="button" class="q-rm" data-rm="' + esc(x.id) + '" aria-label="移除 ' + esc(txt(x.name)) + '">移除</button>' +
       '<span class="c-car" role="cell">' + val(x.car_code) + '</span>' +
       (withSpec ? '<span class="c-spec" role="cell">' + val(x.spec) + '</span>' : '') +
-      '<span class="c-qty" role="cell">' + qtyList(x) + '</span>' +
-      '<div class="qwant"><span class="qcode">' + val(x.code) + '</span><span class="qin"><label for="' + fid + '">想要</label><input id="' + fid + '" data-want="' + esc(x.id) + '" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" value="' + esc(e.want || '') + '"><span class="u">' + (has(x.unit_a) ? esc(x.unit_a) : '') + '</span></span></div></div>';
+      '<span class="c-qty" role="cell">' + qtyList(x) + '</span></div>';
   });
   if (UNDO && UNDO.i >= INQ.length) h += undoRow();
   sheetList.innerHTML = h + '</div>';
 }
-/* 例：1. H0007｜活塞｜K4E｜STD｜TWN｜想要 2 只（空欄位整段省略，不印 —；品牌用原字，店裡對得上） */
+/* 例：1. 活塞｜K4E｜STD｜TWN（空欄位整段省略，不印 —；品牌用原字，店裡對得上）。
+   2026-10-26 業主：不填數量、不印 H0202 這種公司內部編號，數量之後電話談 */
 function inquiryText() {
   var lines = INQ.map(function (e, i) {
     var x = byId.get(e.id);
-    var parts = [x.code, x.name, x.car_code, x.spec, x.brand].filter(has).map(String);
-    if (has(e.want)) parts.push('想要 ' + e.want + (has(x.unit_a) ? ' ' + x.unit_a : ''));
+    var parts = [x.name, x.car_code, x.spec, x.brand].filter(has).map(String);
     return (i + 1) + '. ' + parts.join('｜');
   });
   return '禾賀清倉詢價\n' + lines.join('\n') + '\n—— 請回覆報價，謝謝';
@@ -1414,15 +1497,17 @@ function closeSheet() {
 }
 document.getElementById('qbarBtn').addEventListener('click', function () { go('q'); });
 document.getElementById('qsheetClose').addEventListener('click', goBack);
-sheetList.addEventListener('input', function (e) {
-  var t = e.target, id = t && t.getAttribute('data-want');
-  if (!id) return;
-  var v = t.value.normalize('NFKC').replace(/\D/g, '').slice(0, 6);
-  if (t.value !== v) t.value = v;
-  INQ.forEach(function (q) { if (q.id === id) q.want = v; });
-  saveInq();
-  setLinks();
-  if (!qtext.hidden) qtext.value = inquiryText();
+/* 一鍵清空（業主 2026-10-26 第 4 點）：不跳確認框，5 秒內可按「復原」整批救回 */
+var qclearBtn = document.getElementById('qclearBtn');
+qclearBtn.addEventListener('click', function () {
+  if (!INQ.length) return;
+  clearUndo();
+  UNDO = { all: INQ.slice(), t: setTimeout(clearUndo, UNDO_MS) };
+  INQ = [];
+  afterInqChange();
+  live.textContent = '已清空，5 秒內可按復原';
+  var ub = sheetList.querySelector('[data-undo]');
+  if (ub) { try { ub.focus({ preventScroll: true }); } catch (err) {} }
 });
 function afterInqChange() {
   saveInq(); drawSheet(); updateAddBtn(); refreshMarks();
@@ -1433,7 +1518,8 @@ sheetList.addEventListener('click', function (e) {
   var u = e.target.closest('[data-undo]');
   if (u && UNDO) {
     var d = UNDO; clearUndo();
-    if (!inInq(d.e.id)) INQ.splice(Math.min(d.i, INQ.length), 0, d.e);
+    if (d.all) INQ = d.all.concat(INQ.filter(function (q) { return !d.all.some(function (a) { return a.id === q.id; }); }));
+    else if (!inInq(d.e.id)) INQ.splice(Math.min(d.i, INQ.length), 0, d.e);
     afterInqChange();
     live.textContent = '已復原';
     return;
