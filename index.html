@@ -188,7 +188,7 @@ h1,h2{text-wrap:balance}
 .chip.on{background:var(--head);border-color:var(--head);color:var(--head-ink)}
 .chip.on b{color:var(--brass)}
 /* 牆底：還有就「再看 N 個」（自動接的備援）；看完了就說看完了＋換一批 */
-.wall-end{display:flex;flex-direction:column;align-items:center;gap:.6rem;min-height:3.4rem;margin-top:.9rem}
+.wall-end{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem;min-height:3.4rem;margin-top:.9rem}
 .wall-done{margin:0;color:var(--muted)}
 /* 你剛看過（亞馬遜 recently viewed）：一排小卡左右滑，只存在客人自己的瀏覽器 */
 .recent{margin:1.1rem 0 .2rem;padding-top:.8rem;border-top:2px solid var(--rule)}
@@ -392,7 +392,7 @@ a.prow:active{background:var(--row-hover)}
 .qcells .plus{color:var(--muted)}
 .rel{margin-top:1.8rem}
 /* 業主 2026-10-26 第 8、9 點：標題帶車種／品名，而且往下滑時卡在頂端列下面 */
-.rel h2{display:flex;align-items:baseline;flex-wrap:wrap;gap:.2rem .6rem;margin:0 0 .4rem;padding:.35rem 0;font-size:1.15rem;position:sticky;top:var(--top-h,0px);z-index:5;background:var(--bg)}
+.rel h2{display:flex;align-items:baseline;flex-wrap:wrap;gap:.2rem .6rem;margin:0 0 .4rem;padding:.35rem 0;font-size:1.15rem;position:sticky;top:calc(var(--top-h,0px) - 1px);z-index:5;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
 .rel h2 .k{min-width:0;overflow-wrap:anywhere}
 .rel h2 .k b{margin:0 .25em}
 .rel h2 .n{color:var(--muted);font-weight:500;font-size:.85rem}
@@ -608,7 +608,7 @@ var I18N = {
     ask_line: '用 LINE 問：', q_open: '『', q_close_has: '』有沒有', see_car_pre: '看 ', see_car_post: ' 全部零件', see_name_pre: '看所有車種的 ', see_name_post: '', call: '打電話',
     col_photo: '照片', col_name: '品名', col_car: '車種', col_spec: '規格', col_brand: '品牌', col_qty: '數量', col_stock: '現有', in_inq: '已在詢價單', no_photo_t: '目前無照片，請洽電公司索取商品現狀照片',
     recent: '你剛看過', photos_n: '{n} 張', only_left: '只剩 {n}', stock_: '現有 ', t_add: '＋詢價', t_added: '✓ 已加', t_add_aria: '加入詢價單', t_added_aria: '已在詢價單，看詢價單',
-    chips_aria: '只看哪一類', all: '全部', more_n: '再看 {n} 個', wall_empty: '這一類還沒有照片的商品', wall_done: '這 {n} 項都看完了',
+    chips_aria: '只看哪一類', all: '全部', more_n: '再看 {n} 個', show_all: '全部顯示（{n} 項）', wall_empty: '這一類還沒有照片的商品', wall_done: '這 {n} 項都看完了',
     sort: '排序', sort_rand: '隨機', sort_car: '車種', sort_name: '品名', with_photo: '有照片 {n} 項',
     hours: '營業時間 ', c_tel: '電話', c_add: '加好友', c_msg: '傳訊息', c_mail: '信箱', copy: '複製', upd: '資料更新 <b>{d}</b>・', upd_note: '數量以來電確認為準',
     zoom_n: '放大第 {n} 張', photo_n: ' 照片 {n}', prev: '上一張', next: '下一張', no_photo: '目前無照片，請洽電公司索取商品現狀照片。', raw_brand: '原廠牌字',
@@ -634,7 +634,7 @@ var I18N = {
     ask_line: 'Ask on LINE: ', q_open: '"', q_close_has: '"?', see_car_pre: 'All ', see_car_post: ' parts', see_name_pre: '', see_name_post: ' for all models', call: 'Call',
     col_photo: 'Photo', col_name: 'Part', col_car: 'Model', col_spec: 'Spec', col_brand: 'Brand', col_qty: 'Qty', col_stock: 'Stock', in_inq: 'In inquiry', no_photo_t: 'No photo yet. Call us for a current photo.',
     recent: 'Recently viewed', photos_n: '{n} photos', only_left: 'Only {n} left', stock_: 'Stock ', t_add: '+ Inquire', t_added: '✓ Added', t_add_aria: 'Add to inquiry', t_added_aria: 'In inquiry. View inquiry',
-    chips_aria: 'Category', all: 'All', more_n: 'Show {n} more', wall_empty: 'No photos in this category yet', wall_done: 'You have seen all {n} items',
+    chips_aria: 'Category', all: 'All', more_n: 'Show {n} more', show_all: 'Show all ({n})', wall_empty: 'No photos in this category yet', wall_done: 'You have seen all {n} items',
     sort: 'Sort', sort_rand: 'Random', sort_car: 'Model', sort_name: 'Name', with_photo: '{n} with photos',
     hours: 'Hours ', c_tel: 'Phone', c_add: 'Add friend', c_msg: 'Message', c_mail: 'Email', copy: 'Copy', upd: 'Updated <b>{d}</b> · ', upd_note: 'Stock is confirmed by phone',
     zoom_n: 'Zoom photo {n}', photo_n: ' photo {n}', prev: 'Previous', next: 'Next', no_photo: 'No photo yet. Please call us for a current photo.', raw_brand: 'Brand (original)',
@@ -660,8 +660,35 @@ function T(k, v) {
 var KIND_EN = { '引擎類': 'Engine', '底盤類': 'Chassis', '電裝類': 'Electrical', '傳動類': 'Drivetrain', '其他': 'Other' };
 function kindName(k, short) { k = String(k); if (LANG === 'en') return esc(own(KIND_EN, k) ? KIND_EN[k] : k); return esc(short ? k.replace(/類$/, '') : k); }
 /* 品牌歸類（正廠／台灣製／日本副廠／中古／外匯）：英文版翻；對不到的原字照出 */
-var BRAND_EN = { '正廠': 'OEM', '台灣製': 'Made in Taiwan', '日本副廠': 'Japan aftermarket', '中古': 'Used', '外匯': 'Japan import' };
-function brandShow(bc) { bc = String(bc); return LANG === 'en' && own(BRAND_EN, bc) ? BRAND_EN[bc] : bc; }
+var BRAND_EN = { '正廠': 'OEM', '台灣製': 'Made in Taiwan', '日本副廠': 'Japan aftermarket', '中古': 'Used', '外匯': 'Japan import (used)', '外匯新': 'Japan import (new)', '正廠(外匯)': 'OEM (Japan import)', '正廠(公司)': 'OEM (company stock)', '純正廠': 'Genuine OEM', '日本': 'Japan', '韓製': 'Made in Korea', '德製': 'Made in Germany', '進口': 'Imported', '歐洲': 'Europe', '整理': 'Reconditioned', '副廠': 'Aftermarket', 'USA美': 'USA', '(正)': 'OEM', '正廠.': 'OEM', '日本 TBK': 'Japan TBK' };
+/* 品名英文（業主 2026-10-26 晚：「所有品名也要翻譯成英文」）：ERP 品名是中文，英文版對照這張表；表上沒有的照中文印 */
+var NAME_EN = {
+  '連桿': 'Connecting rod', '水邦浦': 'Water pump', '機油邦浦': 'Oil pump', '引擎膠墊': 'Engine mount', '軸承': 'Bearing', '機油冷卻器': 'Oil cooler',
+  '排氣煞車': 'Exhaust brake', '方向機邦浦': 'Power steering pump', '克拉子壓板': 'Clutch pressure plate', '機油芯子': 'Oil filter', '搖臂鳥': 'Rocker arm assy',
+  '風扇離合器': 'Fan clutch', '噴油嘴': 'Injector nozzle', '偏心軸': 'Camshaft', '柴油芯座總成': 'Fuel filter head assy', '變速箱齒輪': 'Transmission gear',
+  '克拉子片': 'Clutch disc', '汽門頂桿': 'Push rod', '曲軸皮帶盤': 'Crankshaft pulley', '中間齒輪': 'Idler gear', '克拉子氣邦': 'Clutch booster',
+  '煞車氣邦': 'Air brake booster', '空壓機': 'Air compressor', '中間齒輪軸': 'Idler gear shaft', '噴油嘴銅套': 'Injector sleeve', '曲軸': 'Crankshaft',
+  '飛輪': 'Flywheel', '噴油邦浦': 'Injection pump', '老鼠尾': 'Speedometer cable', '噴油嘴總成': 'Injector assy', '輪胎螺絲-前': 'Wheel bolt (front)',
+  '時規蓋': 'Timing cover', '電磁閥': 'Solenoid valve', '飛輪齒輪': 'Flywheel ring gear', '排氣岐管': 'Exhaust manifold', '乾燥劑總成': 'Air dryer assy',
+  '煞車總泵': 'Brake master cylinder', '曲軸配重盤': 'Crankshaft damper', '皮帶惰輪': 'Idler pulley', '變速箱輔助缸': 'Transmission range cylinder',
+  '輪胎螺絲-後': 'Wheel bolt (rear)', '油水分離器': 'Water separator', '中間冷卻器軟管': 'Intercooler hose', '十字軸承': 'Universal joint', '油底殼': 'Oil pan',
+  '空氣芯外殼總成': 'Air filter housing assy', '偏心軸齒輪': 'Camshaft gear', '引擎透氣孔': 'Engine breather', '引擎獅頭': 'Engine front bracket',
+  '煞車風龜': 'Brake chamber', '方向機主機': 'Steering gear box', '曲軸齒輪': 'Crankshaft gear', '機油芯座': 'Oil filter head', '克拉子軸承': 'Clutch release bearing',
+  '起動馬達': 'Starter motor', '共軌噴油管總成': 'Common rail assy', '發電機': 'Alternator', '變速箱主動齒輪': 'Transmission drive gear', '中間冷卻器': 'Intercooler',
+  '副軸齒輪': 'Countershaft gear', '煞車輔助器': 'Brake servo', '克拉子總泵': 'Clutch master cylinder', '繼動閥總成': 'Relay valve assy', '手壓邦浦': 'Hand primer pump',
+  '真空邦浦': 'Vacuum pump', '倒車開關': 'Reverse light switch', '噴油邦接頭': 'Injection pump fitting', '煞車繼動閥': 'Brake relay valve', '保護閥': 'Protection valve',
+  '油門踏板總成': 'Accelerator pedal assy', '避震氣曩總成': 'Air spring assy', '噴油邦分配器': 'Injection pump distributor head', '冷氣壓縮機': 'A/C compressor',
+  '柱塞': 'Plunger', '副齒輪箱': 'Auxiliary gearbox', '煞車分泵': 'Brake wheel cylinder', '駕駛室升降邦浦': 'Cab tilt pump', '排氣煞車控制缸': 'Exhaust brake cylinder',
+  '大王肖修理包': 'King pin kit', '速度感知器': 'Speed sensor', '駕駛室升降舉桿': 'Cab tilt cylinder', '變速同步環': 'Synchronizer ring', '風桶': 'Air tank',
+  '尿素桶': 'AdBlue (DEF) tank', '煞車蹄肖子': 'Brake shoe pin', '電動邦浦': 'Electric pump', '方向機軸': 'Steering shaft', '手煞車總成': 'Parking brake assy',
+  '倒擋齒輪': 'Reverse gear', '變速箱主軸': 'Transmission main shaft', '變速箱副軸': 'Transmission countershaft', '駕駛室避震氣室': 'Cab air spring',
+  '輪胎螺絲': 'Wheel bolt', '節氣門': 'Throttle body', '空壓機供油邦浦': 'Compressor oil feed pump', '觸煤': 'Catalytic converter', '克拉子分邦總成': 'Clutch slave cylinder assy',
+  '乾燥劑四向閥': 'Air dryer 4-way valve', '共軌壓力感應器': 'Rail pressure sensor', '油門位置感應器': 'Accelerator position sensor', '扭力桿橡皮': 'Torque rod bush',
+  '活塞': 'Piston', '方向機油壓桿總成': 'Power steering cylinder assy', '大王肖軸承': 'King pin bearing'
+};
+function nameTxt(n) { if (!has(n)) return '—'; n = String(n).trim(); return LANG === 'en' && own(NAME_EN, n) ? NAME_EN[n] : n; }
+function nmv(n) { return has(n) ? esc(nameTxt(n)) : DASH; }
+function brandShow(bc) { bc = String(bc).trim(); return LANG === 'en' && own(BRAND_EN, bc) ? BRAND_EN[bc] : bc; }
 var STORE_KEY = 'hohe-clearance-inquiry-v1';
 var OTHER = '其他';
 var UNDO_MS = 5000;
@@ -839,7 +866,7 @@ function initData(items) {
   PHOTO_ITEMS = ORDER.filter(hasPhoto);
   DATA.forEach(function (x) {
     x._f = [x.name, x.car_code, x.series, x.spec, x.brand, x.year, x.part_no_key, x.code].map(norm);
-    x._hay = x._f.concat(aliasOf(x.series).map(norm), [norm(brandClass(x.brand))]).join('|');
+    x._hay = x._f.concat(aliasOf(x.series).map(norm), [norm(brandClass(x.brand)), norm(own(NAME_EN, String(x.name || '').trim()) ? NAME_EN[String(x.name).trim()] : '')]).join('|');
   });
   READY = true;
 }
@@ -1086,12 +1113,12 @@ function groupByCar(items) {
 function plist(items, opt) {
   opt = opt || {};
   var mode = opt.mode === 'grouped' || opt.mode === 'bycar' ? opt.mode : 'all';
-  var withCar = mode === 'all';
-  var withSpec = items.some(function (x) { return has(x.spec) || has(x.year); });
+  /* 業主 2026-10-26 晚：「所有商品明細不論哪個分頁都要補上品名…五大規格都要在明細內格內」⇒ 車種、規格欄一律印，空的印 — */
+  var withCar = true, withSpec = true;
   var HEAD = HEADT();
   function cells(x, head) {
     function c(k, inner, extra) { return '<span class="c-' + k + (extra || '') + '" role="' + (head ? 'columnheader' : 'cell') + '">' + inner + '</span>'; }
-    var m = c('name', head ? HEAD.name : val(x.name)) +
+    var m = c('name', head ? HEAD.name : nmv(x.name)) +
       (withCar ? c('car', head ? HEAD.car : val(x.car_code)) : '') +
       (withSpec ? c('spec', head ? HEAD.spec : specYear(x), head ? '' : specBrk(x.spec)) : '');
     var s = c('brand', head ? HEAD.brand : brandCell(x)) + c('qty', head ? HEAD.qty : qtyList(x));
@@ -1164,7 +1191,7 @@ function num(v) { return typeof v === 'number' && isFinite(v) && v >= 0 ? Math.f
 function fmtN(n) { return n == null ? '—' : String(n); }
 function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 function wallCols() { var w = window.innerWidth; return w >= 1100 ? 5 : w >= 820 ? 4 : w >= 560 ? 3 : 2; }
-function wallPage() { return wallCols() * 6; }
+function wallPage() { return 30; }   /* 業主 2026-10-26 晚：一次 30 項、按鈕才接下一批 */
 function kindOk(x) { return !wallKind || kindOf(x) === wallKind; }
 function wallAll() { return READY ? PHOTO_ITEMS : POOL; }
 function wallSource() { return wallAll().filter(kindOk); }
@@ -1187,7 +1214,7 @@ function tile(x) {
   return '<div class="tile"><a class="tlink" href="#p-' + esc(x.id) + '"><span class="c-ph' + (on ? ' inq' : '') + '" data-pid="' + esc(x.id) + '">' +
     '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="320" height="320">' + CK0.replace('{t}', T('in_inq')) +
     (np > 1 ? '<span class="t-np">' + T('photos_n', { n: np }) + '</span>' : '') + (tot > 0 && tot <= 2 ? '<span class="t-left">' + T('only_left', { n: tot }) + '</span>' : '') + '</span>' +
-    '<span class="t-n">' + val(x.name) + '</span><span class="t-c">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span>' +
+    '<span class="t-n">' + nmv(x.name) + '</span><span class="t-c">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span>' +
     '<span class="t-m">' + meta + '</span></a>' +
     '<span class="t-f"><span class="t-q">' + (q.length ? '<span class="t-ql">' + T('stock_') + '</span>' + qtyList(x) : DASH) + '</span>' +
     '<button type="button" class="t-add' + (on ? ' on' : '') + '" data-tadd="' + esc(x.id) + '" aria-label="' + (on ? T('t_added_aria') : T('t_add_aria')) + '">' + (on ? T('t_added') : T('t_add')) + '</button></span></div>';
@@ -1211,7 +1238,8 @@ function sortChips(np) {
 }
 function wallEndHtml() {
   var left = wallSeq.length - wallShown;
-  if (left > 0) return '<button type="button" class="btn line" data-act="wallmore">' + T('more_n', { n: Math.min(wallPage(), left) }) + '</button>';
+  if (left > 0) return '<button type="button" class="btn dark" data-act="wallmore">' + T('more_n', { n: Math.min(wallPage(), left) }) + '</button>' +
+    '<button type="button" class="btn line" data-act="wallall">' + T('show_all', { n: wallSeq.length }) + '</button>';
   if (!wallSeq.length) return '<p class="wall-done">' + T('wall_empty') + '</p>';
   return '<p class="wall-done">' + T('wall_done', { n: wallSeq.length }) + '</p>';
 }
@@ -1234,19 +1262,15 @@ function wallMore() {
   if (m) m.innerHTML = wallEndHtml();
   return true;
 }
-/* 無限捲動：牆底的哨兵離畫面不到一個螢幕高就接下一批；接完還是太近就再接（最多連接 4 批） */
-function watchWall() {
-  if (wallObs) { wallObs.disconnect(); wallObs = null; }
-  var end = document.getElementById('wallEnd');
-  if (!end || !window.IntersectionObserver) return;
-  wallObs = new IntersectionObserver(function (en) {
-    if (!en[0].isIntersecting || mainHash !== 'home') return;
-    for (var i = 0; i < 4; i++) {
-      if (!wallMore()) break;
-      if (end.getBoundingClientRect().top > window.innerHeight + 800) break;
-    }
-  }, { rootMargin: '0px 0px 800px 0px' });
-  wallObs.observe(end);
+/* 業主 2026-10-26 晚：不自動接下一批（改回按鈕）；留空函式給既有呼叫點 */
+function watchWall() { if (wallObs) { wallObs.disconnect(); wallObs = null; } }
+/* 全部顯示：把剩下的一次全印 */
+function wallShowAll() {
+  var w = document.getElementById('wall'), m = document.getElementById('wallEnd');
+  if (!w || wallShown >= wallSeq.length) return;
+  w.insertAdjacentHTML('beforeend', wallSeq.slice(wallShown).map(tile).join(''));
+  wallShown = wallSeq.length;
+  if (m) m.innerHTML = wallEndHtml();
 }
 function redrawWall(scrollTo) {
   var w = document.getElementById('wallWrap');
@@ -1272,7 +1296,7 @@ function recentHtml() {
   return '<div class="recent"><h2>' + T('recent') + '</h2><div class="rstrip">' + items.map(function (x) {
     var f = x.photos && x.photos[0];
     return '<a class="rtile" href="#p-' + esc(x.id) + '">' + (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="96" height="96">' : '<span class="noimg">' + LOGO_SVG + '</span>') +
-      '<span class="rn">' + val(x.name) + '</span><span class="rc">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span></a>';
+      '<span class="rn">' + nmv(x.name) + '</span><span class="rc">' + (has(x.car_code) ? esc(x.car_code) : '') + '</span></a>';
   }).join('') + '</div></div>';
 }
 function vHome() {
@@ -1284,9 +1308,8 @@ function vHome() {
     '<a class="entry" href="#k"><span class="e-k"><span>' + T('by_kind') + '</span></span><span class="e-n"><b>' + fmtN(nk) + '</b>' + T('n_kinds') + '</span><span class="e-go" aria-hidden="true">›</span></a>' +
     '</div>' +
     '<a class="allrow" href="#all"><span>' + T('all_items') + '</span><span class="c">' + T('total_n', { n: fmtN(n) }) + '</span><span class="go" aria-hidden="true">›</span></a>' +
-    /* 聯絡資訊放在圖片牆上面（業主 2026-10-26 第 12 點：牆會一直往下長，放最下面永遠看不到） */
-    '<div class="store-top">' + storeInfo() + contactDl() + updLine() + '</div>' +
-    wallHtml();
+    /* 聯絡資訊在首頁最下方（業主 2026-10-26 晚改回；牆改成按鈕一批 30，不會長到看不到底） */
+    wallHtml() + storeInfo() + contactDl() + updLine();
 }
 function vLoading() {
   return '<div class="loading"><p>' + (LOAD_ERR ? T('load_err') : T('loading')) + '</p>' +
@@ -1305,7 +1328,7 @@ function vCars(si) {
   var h = lhead([{ t: T('by_car'), href: '#s' }, { t: seriesLabel(s.name) }], s.cars.length, 'u_car') + '<div class="nlist two">';
   s.cars.forEach(function (c, ci) {
     h += '<a class="nrow" href="#c-' + si + '-' + ci + '"><span class="k code">' + (c.code ? esc(c.code) : '—') + '</span><span class="c"><b>' + c.items.length + '</b>' + T('u_item_after') + '</span><span class="p">' +
-      uniq(sorted(c.items).map(function (x) { return x.name; })).map(esc).join(T('sep')) + '</span></a>';
+      uniq(sorted(c.items).map(function (x) { return nameTxt(x.name); })).map(esc).join(T('sep')) + '</span></a>';
   });
   return h + '</div>';
 }
@@ -1317,14 +1340,14 @@ function vCarItems(si, ci) {
 function vNames() {
   var h = lhead([{ t: T('by_name') }], NAMES.length, 'u_name') + '<div class="nlist two">';
   NAMES.forEach(function (n, ni) {
-    h += '<a class="nrow" href="#n-' + ni + '"><span class="k">' + (n.name ? esc(n.name) : '—') + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
+    h += '<a class="nrow" href="#n-' + ni + '"><span class="k">' + (esc(nameTxt(n.name))) + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
       uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(esc).join(' · ') + '</span></a>';
   });
   return h + '</div>';
 }
 function vNameItems(ni) {
   var n = NAMES[ni], items = sorted(n.items);
-  return lhead([{ t: T('by_name'), href: '#n' }, { t: n.name ? esc(n.name) : '—' }], items.length, 'u_item', items.filter(hasPhoto)) + plist(items);
+  return lhead([{ t: T('by_name'), href: '#n' }, { t: esc(nameTxt(n.name)) }], items.length, 'u_item', items.filter(hasPhoto)) + plist(items);
 }
 function vAll() { return lhead([{ t: T('all_items') }], ORDER.length, 'u_item', PHOTO_ITEMS) + plist(ORDER, { mode: 'grouped' }); }
 /* 照類別找：類別 → 品名 → 商品（業主 2026-10-26「要加」） */
@@ -1332,7 +1355,7 @@ function vKinds() {
   var h = lhead([{ t: T('by_kind') }], KINDS.length, 'u_kind') + '<div class="nlist two">';
   KINDS.forEach(function (k, ki) {
     h += '<a class="nrow" href="#k-' + ki + '"><span class="k">' + kindName(k.label) + '</span><span class="c"><b>' + k.items.length + '</b>' + T('u_item_after') + '</span><span class="p">' +
-      k.names.slice(0, 14).map(function (n) { return n.name ? esc(n.name) : '—'; }).join(T('sep')) + '</span></a>';
+      k.names.slice(0, 14).map(function (n) { return esc(nameTxt(n.name)); }).join(T('sep')) + '</span></a>';
   });
   return h + '</div>';
 }
@@ -1340,14 +1363,14 @@ function vKindNames(ki) {
   var k = KINDS[ki];
   var h = lhead([{ t: T('by_kind'), href: '#k' }, { t: kindName(k.label) }], k.names.length, 'u_name') + '<div class="nlist two">';
   k.names.forEach(function (n, ni) {
-    h += '<a class="nrow" href="#k-' + ki + '-' + ni + '"><span class="k">' + (n.name ? esc(n.name) : '—') + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
+    h += '<a class="nrow" href="#k-' + ki + '-' + ni + '"><span class="k">' + (esc(nameTxt(n.name))) + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
       uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(esc).join(' · ') + '</span></a>';
   });
   return h + '</div>';
 }
 function vKindItems(ki, ni) {
   var k = KINDS[ki], n = k.names[ni], items = sorted(n.items);
-  return lhead([{ t: T('by_kind'), href: '#k' }, { t: kindName(k.label), href: '#k-' + ki }, { t: n.name ? esc(n.name) : '—' }], items.length, 'u_item', items.filter(hasPhoto)) + plist(items);
+  return lhead([{ t: T('by_kind'), href: '#k' }, { t: kindName(k.label), href: '#k-' + ki }, { t: esc(nameTxt(n.name)) }], items.length, 'u_item', items.filter(hasPhoto)) + plist(items);
 }
 function vFind() {
   var q = kw.value;
@@ -1365,7 +1388,7 @@ function vFind() {
         '<span>' + T('ask_line') + '<span class="ib">' + T('q_open') + esc(sc.join('')) + '<span class="nw">' + esc(last) + T('q_close_has') + '</span></span></span></a>';
     }
     sg.cars.forEach(function (c) { b += '<a class="btn dark" href="' + c.href + '">' + T('see_car_pre') + '<span class="code">' + esc(c.code) + '</span>' + T('see_car_post') + '</a>'; });
-    sg.names.forEach(function (n) { b += '<a class="btn dark" href="' + n.href + '">' + T('see_name_pre') + esc(n.name) + T('see_name_post') + '</a>'; });
+    sg.names.forEach(function (n) { b += '<a class="btn dark" href="' + n.href + '">' + T('see_name_pre') + esc(nameTxt(n.name)) + T('see_name_post') + '</a>'; });
     if (TEL_HREF) b += '<a class="btn dark" href="' + esc(TEL_HREF) + '">' + T('call') + ' <span class="tel">' + esc(TEL_TXT) + '</span></a>';
     return head + '<div class="empty"><p>' + T('not_found') + '</p><div class="row">' + b + '</div>' +
       '<p class="hint">' + T('hint_more') + '</p>' +
@@ -1381,15 +1404,15 @@ function vProduct(x) {
   var other = has(x.name) ? sorted(DATA.filter(function (y) { return y.id !== x.id && y.name === x.name && y.car_code !== x.car_code; })) : [];
   var gal = photos.length
     ? '<div class="strip' + (photos.length > 1 ? ' multi' : '') + '" id="pstrip">' + photos.map(function (p, i) {
-        return '<button type="button" class="shot" data-lb="' + i + '" aria-label="' + T('zoom_n', { n: i + 1 }) + '"><img src="photos/' + esc(p) + '" alt="' + esc(txt(x.name)) + T('photo_n', { n: i + 1 }) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></button>';
+        return '<button type="button" class="shot" data-lb="' + i + '" aria-label="' + T('zoom_n', { n: i + 1 }) + '"><img src="photos/' + esc(p) + '" alt="' + esc(nameTxt(x.name)) + T('photo_n', { n: i + 1 }) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></button>';
       }).join('') + '</div>' + (photos.length > 1 ? '<button type="button" class="parr prev" data-pstep="-1" aria-label="' + T('prev') + '">‹</button><button type="button" class="parr next" data-pstep="1" aria-label="' + T('next') + '">›</button><span class="shotn" id="pshotn">1 / ' + photos.length + '</span>' : '')
     : '<div class="nophoto">' + LOGO_SVG + '<p>' + T('no_photo') + '</p></div>';
   var bc = has(x.brand) ? brandClass(x.brand) : '';
-  var rawBrand = has(x.brand) && bc !== String(x.brand).trim() ? '<dt class="raw">' + T('raw_brand') + '</dt><dd class="raw">' + esc(x.brand) + '</dd>' : '';
+  var rawBrand = has(x.brand) && bc !== String(x.brand).trim() ? '<dt class="raw">' + T('raw_brand') + '</dt><dd class="raw">' + esc(brandShow(x.brand)) + '</dd>' : '';
   return '<div class="pnav"><button type="button" class="btn back" data-act="back">' + T('back_arrow') + '</button>' +
     crumbs([{ t: seriesLabel(s.name), href: '#s-' + x._si }, { t: val(x.car_code), href: '#c-' + x._si + '-' + x._ci, code: true }]) + '</div>' +
     '<div class="pp-top"><div class="gallery">' + gal + '</div><div>' +
-    '<div class="pline"><h1 class="ptitle">' + val(x.name) + '</h1><span class="pcar">' + val(x.car_code) + '</span>' +
+    '<div class="pline"><h1 class="ptitle">' + nmv(x.name) + '</h1><span class="pcar">' + val(x.car_code) + '</span>' +
       '<span class="pqty"><span>' + T('col_stock') + '</span>' + qtyPlain(x) + '</span></div>' +
     '<div class="actw"><div class="actions' + (TEL_HREF ? '' : ' one') + '">' +
       '<button type="button" class="btn primary' + (on ? ' on' : '') + '" id="addq" data-id="' + esc(x.id) + '">' + (on ? T('added') : T('add')) + '</button>' +
@@ -1406,7 +1429,7 @@ function vProduct(x) {
       '<dt>' + T('f_ref') + '</dt><dd class="code sel">' + val(x.code) + '</dd>' +
     '</dl></div></div>' +
     '<section class="rel"><h2><span class="k">' + T('same_car') + '<b class="code">' + val(x.car_code) + '</b>' + T('still_has') + '</span><span class="n"><b>' + same.length + '</b> ' + T('u_item') + '</span></h2>' + (same.length ? plist(same, { mode: 'bycar' }) : '<p class="none">—</p>') + '</section>' +
-    '<section class="rel"><h2><span class="k">' + T('same_name') + '<b>' + val(x.name) + '</b>' + T('other_cars_has') + '</span><span class="n"><b>' + other.length + '</b> ' + T('u_item') + '</span></h2>' + (other.length ? plist(other) : '<p class="none">—</p>') + '</section>';
+    '<section class="rel"><h2><span class="k">' + T('same_name') + '<b>' + nmv(x.name) + '</b>' + T('other_cars_has') + '</span><span class="n"><b>' + other.length + '</b> ' + T('u_item') + '</span></h2>' + (other.length ? plist(other) : '<p class="none">—</p>') + '</section>';
 }
 /* 適用車種（item_car 共用車；資料的 fits 欄）：站上有那個車種就可點過去 */
 function fitsRow(x) {
@@ -1530,6 +1553,17 @@ function onDataReady(items) {
 function onDataFail() { if (PENDING) drawMain(mainHash, false, true); }
 /* 浮動「上一頁」（業主 2026-10-26 第 5 點）：頁面上方那顆「← 回上一頁」捲出畫面後，左下角浮一顆，不用捲回去 */
 var fback = document.getElementById('fback'), fbackObs = null;
+/* --top-h＝頂端列的實際底緣（業主 2026-10-26 晚：卡頂標題與頂端列之間不要有縫）：
+   取 getBoundingClientRect().bottom（含安全區、sticky 位移、字放大），捲動／表頭變高時重量；CSS 再往上疊 1px 蓋掉半像素縫 */
+var topEl = document.querySelector('.top'), topHLast = -1;
+function setTopH() {
+  var r = topEl ? topEl.getBoundingClientRect() : null, b = r ? Math.max(r.bottom, r.height) : 0;
+  if (Math.abs(b - topHLast) > 0.01) { topHLast = b; document.documentElement.style.setProperty('--top-h', b + 'px'); }
+  return r ? r.height : 0;
+}
+if (topEl && window.ResizeObserver) new ResizeObserver(function () { setTopH(); }).observe(topEl);
+window.addEventListener('resize', setTopH);
+window.addEventListener('scroll', function () { if (document.querySelector('.rel h2')) setTopH(); }, { passive: true });
 function watchBack() {
   if (fbackObs) { fbackObs.disconnect(); fbackObs = null; }
   fback.classList.remove('show');
@@ -1537,8 +1571,7 @@ function watchBack() {
   fback.hidden = !b;
   if (!b || !window.IntersectionObserver) return;
   /* 頂端搜尋列是 sticky，會蓋住那顆鈕：被蓋住就算捲出畫面了 */
-  var hd = document.querySelector('.top'), hh = hd ? hd.getBoundingClientRect().height : 0;
-  document.documentElement.style.setProperty('--top-h', Math.round(hh) + 'px');
+  var hh = setTopH();
   fbackObs = new IntersectionObserver(function (en) {
     var e = en[0];
     fback.classList.toggle('show', !e.isIntersecting && e.boundingClientRect.bottom < hh + 1);
@@ -1550,11 +1583,6 @@ fback.addEventListener('click', goBack);
 var totop = document.getElementById('totop');
 function onScrollTop() { totop.classList.toggle('show', window.scrollY > window.innerHeight * 1.5); }
 window.addEventListener('scroll', onScrollTop, { passive: true });
-/* 保險（業主 2026-10-26：滑到底就直接接下一批）：IntersectionObserver 之外再用捲動位置判斷一次，離底不到 600px 就接 */
-window.addEventListener('scroll', function () {
-  if (mainHash !== 'home' || document.documentElement.classList.contains('lock')) return;
-  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) wallMore();
-}, { passive: true });
 totop.addEventListener('click', function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } });
 /* 手機在首頁最上面往下拉 80px 放開＝換一批（淘寶手機版的下拉）；瀏覽器自己的下拉重新整理已用 overscroll-behavior 關掉 */
 var ptr = document.getElementById('ptr'), ptrY = null, ptrD = 0, PTR_MIN = 80;
@@ -1694,7 +1722,7 @@ function undoRow() {
   if (!UNDO) return '';
   var t;
   if (UNDO.all) t = T('cleared_n', { n: UNDO.all.length });
-  else { var x = byId.get(UNDO.e.id); t = T('removed_x', { x: val(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(x.car_code) + '</span>' : '') }); }
+  else { var x = byId.get(UNDO.e.id); t = T('removed_x', { x: nmv(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(x.car_code) + '</span>' : '') }); }
   return '<div class="qundo" role="row"><span class="t" role="cell">' + t + '</span>' +
     '<button type="button" class="btn small line" data-undo="1">' + T('undo') + '</button></div>';
 }
@@ -1718,8 +1746,8 @@ function drawSheet() {
     if (UNDO && UNDO.i === i) h += undoRow();
     var x = byId.get(e.id);
     h += '<div class="qrow" role="row">' +
-      '<span class="c-name" role="cell">' + val(x.name) + '</span>' +
-      '<button type="button" class="q-rm" data-rm="' + esc(x.id) + '" aria-label="' + T('remove_aria', { n: esc(txt(x.name)) }) + '">' + T('remove') + '</button>' +
+      '<span class="c-name" role="cell">' + nmv(x.name) + '</span>' +
+      '<button type="button" class="q-rm" data-rm="' + esc(x.id) + '" aria-label="' + T('remove_aria', { n: esc(nameTxt(x.name)) }) + '">' + T('remove') + '</button>' +
       '<span class="c-car" role="cell">' + val(x.car_code) + '</span>' +
       (withSpec ? '<span class="c-spec" role="cell">' + specYear(x) + '</span>' : '') +
       '<span class="c-qty" role="cell">' + qtyList(x) + '</span></div>';
@@ -1878,7 +1906,7 @@ function lbCount() {
 function openLB(i) {
   if (!curItem || !curItem.photos || !curItem.photos.length) return;
   var x = curItem;
-  lbStrip.innerHTML = x.photos.map(function (p, k) { return '<div class="lb-slide"><img src="photos/' + esc(p) + '" alt="' + esc(txt(x.name)) + T('photo_n', { n: k + 1 }) + '" draggable="false"></div>'; }).join('');
+  lbStrip.innerHTML = x.photos.map(function (p, k) { return '<div class="lb-slide"><img src="photos/' + esc(p) + '" alt="' + esc(nameTxt(x.name)) + T('photo_n', { n: k + 1 }) + '" draggable="false"></div>'; }).join('');
   lb.hidden = false;
   document.documentElement.classList.add('lock');
   lbStrip.style.scrollBehavior = 'auto';
@@ -1941,6 +1969,7 @@ view.addEventListener('click', function (e) {
   if (act === 'back') goBack();
   else if (act === 'clearsearch') clearSearch();
   else if (act === 'wallmore') wallMore();
+  else if (act === 'wallall') wallShowAll();
   else if (act === 'retry') { LOAD_ERR = false; drawMain(mainHash, false, true); loadCatalog(); }
 });
 
