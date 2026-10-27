@@ -214,6 +214,12 @@ h1,h2{text-wrap:balance}
 .wall-bar{flex-wrap:nowrap}
 .wall-bar>.sortdd{flex:none}
 .wall-bar>.chips{flex:1 1 auto;min-width:0}
+/* 類別往左滑時「鑽進」排序鈕底下（業主 2026-10-27：消失邊要切齊排序鈕的半圓，不要一刀直線）：
+   類別列往左伸進排序鈕的右半圓（負邊距＝欄距 .9rem＋半圓 1.3rem），排序鈕不透明、疊在上面 ⇒ 看到的邊界就是那條半圓弧；
+   左邊補同樣的內距，沒滑的時候第一顆位置跟原本一樣 */
+.wall-bar>.sortdd{position:relative;z-index:2}
+.wall-bar>.sortdd>summary{background:var(--bg)}
+.wall-bar>.chips{position:relative;z-index:1;margin-left:-2.2rem;padding-left:2.2rem;scroll-padding-left:2.2rem}
 .wall-cnt{flex-basis:100%;margin:0;text-align:center;color:var(--muted);font-size:.9rem}
 .chiplab{color:var(--muted);font-size:.9rem;white-space:nowrap}
 .chiplab.n{margin-left:.2rem}
