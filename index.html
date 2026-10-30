@@ -139,6 +139,32 @@ h1,h2{text-wrap:balance}
 .kwf input::-webkit-search-cancel-button{display:none}
 .kwclear{position:absolute;right:2px;top:2px;bottom:2px;min-width:4rem;border:0;border-radius:0 4px 4px 0;background:transparent;color:var(--brass-ink);font-weight:700;font-size:.95rem}
 @media (max-width:719px){.top .inner{grid-template-columns:minmax(0,1fr);gap:.15rem}}
+/* 電腦版搜尋列一行（業主 2026-10-30）：logo｜品名｜車種｜料號｜模糊｜鈕。前三格的寬＝ERP 最長品名／車種／料號（fitSearchCols 量好放 --w-in-*），剩下的都給模糊那格。
+   頂列在這個寬度放寬到 1240px（內容區仍是 900），放不下五格的窄螢幕維持兩行 */
+@media (min-width:1100px){
+  .top .inner{max-width:1240px;grid-template-columns:auto var(--w-in-name,9em) var(--w-in-car,7em) var(--w-in-pn,9em) minmax(9em,1fr) auto auto auto;gap:0 .5rem}
+  .top .hdrow,.top .kwf{display:contents}
+  .top .shop{order:1;margin-right:.7rem}
+  #kwName{order:2}#kwCar{order:3}#kwPn{order:4}
+  .top .search{order:5}
+  .top .homebtn{order:6;margin-left:.3rem}.top .themebtn{order:7}#langBtn{order:8}
+  .hdrow .homebtn[hidden]+.themebtn{margin-left:.3rem}
+  .kwf input,.search input{height:44px}
+  .kwf input{font-size:1rem}
+}
+
+/* 分欄下拉提示（跟著正在打的那格；一列＝值｜件數，料號列＝料號｜品名｜車種） */
+.sugbox{position:fixed;z-index:60;max-height:min(55vh,26rem);overflow-y:auto;overscroll-behavior:contain;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.sugrow{display:grid;grid-template-columns:minmax(0,1fr) max-content;align-items:center;column-gap:.8rem;min-height:2.6rem;padding:.25rem .8rem;border-bottom:1px solid var(--line);cursor:pointer}
+.sugrow.pn{grid-template-columns:max-content minmax(0,1fr) max-content}
+.sugrow:last-child{border-bottom:0}
+.sugrow.on{background:var(--row-hover)}
+@media (hover:hover){.sugrow:hover{background:var(--row-hover)}}
+.sugrow .sv{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.sugrow .sv.code,.sugrow .sc{font-family:var(--font-code);letter-spacing:.02em}
+.sugrow .ss{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.sugrow .sn,.sugrow .sc{text-align:right;color:var(--muted);font-family:var(--font-code);font-variant-numeric:tabular-nums}
+.sugnone{padding:.55rem .8rem;color:var(--muted);font-size:.92rem}
 
 /* ── 頁首下一行：怎麼買三步（同一行，手機可折兩行，字 ≥16px） ── */
 .banner{background:var(--surface);border-bottom:1px solid var(--line);color:var(--ink);font-size:max(16px,.9rem)}
@@ -319,6 +345,9 @@ html.lock .totop{display:none}
 
 /* ── 分類清單（廠牌／車種／品名） ── */
 .lsort{display:flex;align-items:center;gap:.45rem;margin:0 0 .5rem;padding:.35rem 0;position:sticky;top:calc(var(--top-h,0px) - 1px);z-index:5;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
+.allbar{flex-direction:column;align-items:stretch;gap:.35rem}
+.allbar .arow{display:flex;align-items:center;gap:.45rem;overflow-x:auto;scrollbar-width:none;min-width:0}
+.allbar .arow::-webkit-scrollbar{display:none}
 .nlist{display:grid;border-top:2px solid var(--rule)}
 @media (min-width:720px){.nlist.two{grid-template-columns:1fr 1fr;column-gap:2rem}}
 .nrow{display:grid;grid-template-columns:minmax(0,1fr) max-content;grid-template-areas:"k c" "p c";column-gap:1rem;align-items:center;min-height:3.9rem;padding:.55rem .3rem;border-bottom:1px solid var(--line);text-decoration:none}
@@ -336,12 +365,11 @@ html.lock .totop{display:none}
    依車種分段（grouped）與單一車種（bycar）不印車種欄（.nocar）；整張表都沒有規格就不畫規格欄（.nospec）。
    門檻用 em：字放大時也會換成窄版，數量欄永遠留在畫面內。 */
 #view{container:view / inline-size}
-.plist{--phw:96px;display:grid;grid-template-columns:var(--phw) minmax(0,1fr) fit-content(5.4em);column-gap:.7rem;border-top:2px solid var(--rule)}
+.plist{--phw:96px;display:grid;grid-template-columns:var(--phw) minmax(0,1fr) var(--w-side,fit-content(5.4em));column-gap:.7rem;border-top:2px solid var(--rule)}
 @supports (width:1cqi){.plist{--phw:min(96px,24cqi)}}
-.plist{--wc:var(--phw) minmax(6em,1fr) max-content fit-content(7em) fit-content(5em) max-content}
-.plist.nospec{--wc:var(--phw) minmax(6em,1fr) max-content fit-content(5em) max-content}
-.plist.nocar{--wc:var(--phw) minmax(6em,1fr) fit-content(7em) fit-content(5em) max-content}
-.plist.nocar.nospec{--wc:var(--phw) minmax(6em,1fr) fit-content(5em) max-content}
+/* 欄寬＝ERP 各欄最長的字量出來的固定寬（業主 2026-10-30：「間距要去掃描 ERP 各項目最長去抓取」；colFit() 開頁時量、設 --w-*）。
+   每張清單（全部商品／依車種／依品名／依類別／搜尋／商品頁同車種同品名）共用同一組寬 ⇒ 全站欄位起點一樣 */
+.plist{--wc:var(--phw) minmax(var(--w-name,6em),1fr) var(--w-car,max-content) var(--w-spec,fit-content(7em)) var(--w-brand,fit-content(5em)) var(--w-qty,max-content)}
 .prow{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;min-height:3.1rem;padding-block:.35rem;border-bottom:1px solid var(--line);text-decoration:none}
 a.prow:active{background:var(--row-hover)}
 @media (hover:hover){a.prow:hover{background:var(--row-hover)}}
@@ -378,17 +406,18 @@ a.prow:active{background:var(--row-hover)}
 .phead .c-name,.phead .c-car,.phead .c-qty,.phead .c-brand{font-family:var(--font-body);font-weight:500;font-size:1em;letter-spacing:0;color:var(--muted)}
 .dash{color:var(--muted);font-weight:400}
 @supports (grid-template-columns:subgrid){
-  @container view (min-width:34em){
-    .plist{grid-template-columns:var(--wc);column-gap:.8rem}
-    .plist .c-main,.plist .c-side{display:contents}
-    .plist .c-side>.c-qty{order:0}
-    .plist .c-name{font-weight:500}
-    .plist .c-car{white-space:nowrap;overflow-wrap:normal}
-    .plist .c-spec{overflow-wrap:normal;word-break:keep-all}
-    .plist .c-spec.brk{overflow-wrap:anywhere}
-    .plist .c-brand{color:inherit;white-space:nowrap}
-  }
+  .wide .plist{grid-template-columns:var(--wc);column-gap:.8rem}
+  .wide .plist .c-main,.wide .plist .c-side{display:contents}
+  .wide .plist .c-side>.c-qty{order:0}
+  .wide .plist .c-name{font-weight:500}
+  .wide .plist .c-car{white-space:nowrap;overflow-wrap:normal}
+  .wide .plist .c-spec{overflow-wrap:normal;word-break:keep-all}
+  .wide .plist .c-spec.brk{overflow-wrap:anywhere}
+  .wide .plist .c-brand{color:inherit;overflow-wrap:anywhere}
 }
+/* 量欄寬用的隱形樣本（colFit）：字型、字級跟清單格子一樣，只是不排版 */
+.colprobe{position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;display:block!important;border:0!important}
+.colprobe>span{display:inline-block!important;white-space:nowrap!important;width:auto!important;overflow:visible!important;-webkit-line-clamp:none!important}
 @supports not (grid-template-columns:subgrid){
   .prow{grid-template-columns:96px minmax(0,1fr) 5.4em;column-gap:.7rem}
 }
@@ -428,17 +457,16 @@ a.prow:active{background:var(--row-hover)}
 .facts dt,.facts dd{display:flex;align-items:center;min-height:3rem;margin:0;padding:.45rem .15rem;border-bottom:1px solid var(--line)}
 .facts dt{color:var(--muted);font-size:.92rem}
 .facts dd{font-size:1.1rem;font-weight:500;min-width:0;overflow-wrap:anywhere}
-.facts dd.code{font-size:1.22rem}
-.facts dd.sel{user-select:text;-webkit-user-select:text;color:var(--muted);font-size:1.05rem}
+/* 業主 2026-10-30：商品卡內資訊字級統一（含編號、原廠牌字、料號、共用車種）＝一律 1.1rem；料號／編號只換等寬字型、不另放大縮小 */
+.facts dd.code{font-size:1.1rem}
+.facts dd.sel{user-select:text;-webkit-user-select:text}
 /* 適用車種（item_car 共用車）：每個代號一顆，有在站上的可點去那個車種 */
 .facts dd.fits{flex-wrap:wrap;gap:.3rem .45rem;padding-block:.5rem}
-.facts dd.fits a,.facts dd.fits span{display:inline-flex;align-items:center;min-height:2.2rem;padding:0 .6rem;border-radius:5px;background:var(--plate);color:var(--ink);font-family:var(--font-code);font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-decoration:none}
+.facts dd.fits a,.facts dd.fits span{display:inline-flex;align-items:center;min-height:2.2rem;padding:0 .6rem;border-radius:5px;background:var(--plate);color:var(--ink);font-family:var(--font-code);font-weight:600;font-size:1.1rem;letter-spacing:.02em;text-decoration:none}
 /* 業主 2026-10-27 第 14 點：白天模式深咖啡看不清 ⇒ 企業識別色 藍底（--head）黃字（--brass）；不能點的白字 */
 .facts dd.fits a,.facts dd.fits span{background:var(--head);color:var(--head-ink)}
 .facts dd.fits a{color:var(--brass);border:2px solid var(--brass)}
 /* 品牌原字：小字（業主 Q4A「原字放小字」）；自己一列、一格一個值 */
-.facts dt.raw,.facts dd.raw{min-height:2.4rem;padding-block:.3rem}
-.facts dd.raw{color:var(--muted);font-size:.9rem;font-weight:400}
 /* 現有：純文字，兩種單位各自一格 */
 .qcells{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .7rem}
 .qcell{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap}
@@ -664,7 +692,7 @@ var I18N = {
   zh: {
     site_sub: '清倉零件', company: '禾賀企業有限公司', home: '⌂ 首頁', lang_btn: 'EN', lang_label: 'Switch to English',
     step1: '按加入詢價單', step2_line: '分享至禾賀公司 LINE 聊天視窗詢價', step2_tel: '打電話或傳訊息給我們詢價', step2_msg: '傳訊息給我們詢價',
-    ph_long: '模糊搜尋：品名、車種、料號', ph_short: '模糊搜尋', kw_aria: '模糊搜尋品名、車種、料號', kw_clear: '清除',
+    ph_long: '模糊搜尋：品名、車種、料號', ph_short: '模糊搜尋', ph_tiny: '模糊', kw_aria: '模糊搜尋品名、車種、料號', kw_clear: '清除',
     kwf_aria: '分欄搜尋', kwf_name: '品名', kwf_car: '車種', kwf_pn: '料號',
     back: '上一頁', back_arrow: '← 回上一頁', totop: '回到最上面', ptr_pull: '再往下拉換一批', ptr_release: '放開換一批', reshuffled: '已換一批',
     by_car: '依車種', by_name: '依品名', by_kind: '依類別', all_items: '全部商品', total_n: '共 {n} 項', n_brands: '廠牌', n_cars: '車種', n_names: '品名', n_kinds: '類',
@@ -686,13 +714,13 @@ var I18N = {
     q_wa: '用 WhatsApp 傳給我們', q_mail: '用 Email 寄給我們', q_mail_copy: '複製信箱', q_text_aria: '詢價內容', remove: '移除', remove_aria: '移除 {n}',
     cleared_n: '已清空 {n} 項・', removed_x: '已移除 {x}・', undo: '復原', live_cleared: '已清空，5 秒內可按復原', live_restored: '已復原', live_removed: '已移除，5 秒內可按復原',
     sel_copy: '已選取，請長按「拷貝」', copied_line: '已複製，貼到 LINE 給我們就好', copied_msg: '已複製，貼到訊息裡傳給我們就好', copied_mail: '已複製信箱 ', longpress_mail: '請長按信箱文字選取',
-    theme_label: '切換深淺色', c_map: '地圖', sort_count: '項數', sort_az: '字母', list_sort: '排序', c_addr: '地址',
+    theme_label: '切換深淺色', c_map: '地圖', sort_count: '項數', asort_name: '品名', asort_brand: '品牌', asort_qty: '數量多', asort_photo: '有照片', kind_lab: '類別', pn_sug_none: '沒有這個料號', sug_more: '還有 {n} 個，再多打幾個字', sort_az: '字母', list_sort: '排序', c_addr: '地址',
     other: '其他', crumbs_aria: '目前位置', sep: '、', korean: '韓國車', lb_aria: '照片放大', lb_hint: '點兩下放大・兩指可縮放・手機橫拿看更大'
   },
   en: {
     site_sub: 'Clearance Parts', company: 'Housaku Enterprise Co., Ltd.', home: '⌂ Home', lang_btn: '中文', lang_label: '切換成中文',
     step1: 'Tap "Add to inquiry"', step2_line: 'Share it to Housaku\'s LINE chat for a quote', step2_tel: 'Call or message us for a quote', step2_msg: 'Message us for a quote',
-    ph_long: 'Search anything: part, model, part no.', ph_short: 'Search anything', kw_aria: 'Search part name, model or part number', kw_clear: 'Clear',
+    ph_long: 'Search anything: part, model, part no.', ph_short: 'Search anything', ph_tiny: 'Search', kw_aria: 'Search part name, model or part number', kw_clear: 'Clear',
     kwf_aria: 'Search by field', kwf_name: 'Part name', kwf_car: 'Model', kwf_pn: 'Part no.',
     back: 'Back', back_arrow: '← Back', totop: 'Back to top', ptr_pull: 'Pull to reshuffle', ptr_release: 'Release to reshuffle', reshuffled: 'Reshuffled',
     by_car: 'By model', by_name: 'By part name', by_kind: 'By category', all_items: 'All items', total_n: '{n} items', n_brands: ' makes', n_cars: ' models', n_names: ' names', n_kinds: ' groups',
@@ -714,7 +742,7 @@ var I18N = {
     q_wa: 'Send via WhatsApp', q_mail: 'Send by email', q_mail_copy: 'Copy email', q_text_aria: 'Inquiry text', remove: 'Remove', remove_aria: 'Remove {n}',
     cleared_n: 'Cleared {n} items · ', removed_x: 'Removed {x} · ', undo: 'Undo', live_cleared: 'Cleared. Undo within 5 seconds', live_restored: 'Restored', live_removed: 'Removed. Undo within 5 seconds',
     sel_copy: 'Selected. Long-press to copy', copied_line: 'Copied. Paste it to us on LINE', copied_msg: 'Copied. Paste it into a message to us', copied_mail: 'Email copied ', longpress_mail: 'Long-press the email to select it',
-    theme_label: 'Toggle light / dark', c_map: 'Map', sort_count: 'Count', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
+    theme_label: 'Toggle light / dark', c_map: 'Map', sort_count: 'Count', asort_name: 'Name', asort_brand: 'Brand', asort_qty: 'Most stock', asort_photo: 'With photo', kind_lab: 'Category', pn_sug_none: 'No such part no.', sug_more: '{n} more, keep typing', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
     other: 'Other', crumbs_aria: 'You are here', sep: ', ', korean: 'Korean makes', lb_aria: 'Photo zoom', lb_hint: 'Double-tap to zoom · pinch to scale · turn the phone sideways for a bigger view'
   }
 };
@@ -951,6 +979,7 @@ function initData(items) {
   DATA.forEach(function (x) {
     x._f = [x.name, x.car_code, x.series, x.spec, x.brand, x.year, x.part_no_key, x.code].map(norm);
     x._fits = (Array.isArray(x.fits) ? x.fits : []).map(norm).filter(Boolean);
+    x._pk = pnKey(x.part_no); x._sk = pnKey(x.spec);
     x._en = norm(own(NAME_EN, String(x.name || '').trim()) ? NAME_EN[String(x.name).trim()] : '');
     x._hay = x._f.concat(aliasOf(x.series).map(norm), [norm(brandClass(x.brand)), x._en], x._fits).join('|');
   });
@@ -977,7 +1006,7 @@ function canon(s) {
   return cnDigits(s).replace(/O/g, '0').replace(/有沒有|嗎|的|要|找/g, ' ');
 }
 function norm(s) {
-  return has(s) ? canon(s).replace(/[\s\-‐-―－_\/]/g, '') : '';
+  return has(s) ? canon(s).replace(/[\s\-‐-―－_\/.．·・,，]/g, '') : '';
 }
 /* 廠牌中文別名：站台設定 search_aliases.series 有給就整組用設定的（給空的＝關掉），沒給才用下面的內建值 */
 var DEFAULT_SERIES_ALIAS = {
@@ -1096,15 +1125,17 @@ function runSearch(ts, vs, loose) {
   out.sort(function (a, b) { return (a[0] - b[0]) || (a[1]._o - b[1]._o); });
   return out.map(function (p) { return p[1]; });
 }
-/* 分欄（品名／車種／料號）：品名＝包含（同義字、英文名也算）；車種＝開頭相同（含共用車種，O 與 0 互通）；料號＝包含 */
+/* 料號比對鍵：只留英文與數字（業主 2026-10-30：「忽略 - 空格 . 等符號，只要英文數字吻合」⇒ 12-34／1234／1.234／123 4 都找得到 1234） */
+function pnKey(s) { return has(s) ? String(s).normalize('NFKC').toUpperCase().replace(/[^0-9A-Z\u3400-\u9FFF]/g, '') : ''; }
+/* 分欄（品名／車種／料號）：品名＝包含（同義字、英文名也算）；車種＝開頭相同（含共用車種，O 與 0 互通）；料號＝包含（只比英數，X123X／123XX／XX123 都算） */
 function kwFields() {
-  return { name: norm(kwName.value), car: norm(kwCar.value), pn: norm(kwPn.value) };
+  return { name: norm(kwName.value), car: norm(kwCar.value), pn: pnKey(kwPn.value) };
 }
 function fieldsOn(f) { return !!(f.name || f.car || f.pn); }
 function fieldPass(x, f) {
   if (f.name && !variants(f.name).some(function (v) { return x._f[0].indexOf(v) >= 0 || (x._en && x._en.indexOf(v) >= 0); })) return false;
   if (f.car && !(x._f[1].indexOf(f.car) === 0 || x._fits.some(function (c) { return c.indexOf(f.car) === 0; }))) return false;
-  if (f.pn && x._f[6].indexOf(f.pn) < 0 && x._f[3].indexOf(f.pn) < 0) return false;
+  if (f.pn && x._pk.indexOf(f.pn) < 0 && x._sk.indexOf(f.pn) < 0) return false;
   return true;
 }
 function search(q) {
@@ -1239,6 +1270,64 @@ function plist(items, opt) {
     });
   } else rows(items);
   return h + '</div>';
+}
+/* ── 欄寬：用 ERP 各欄最長的字量（業主 2026-10-30：「間距抓取方式要去掃描 ERP 各項目最長去抓取，而不是隨意按照喜好」）。
+   樣本＝2026-10-30 ERP 有庫存 19,085 項逐欄最長（中文算 2 格、英數 1 格）；量法＝放進跟清單格子同樣式的隱形樣本，量實際寬度。
+   每張清單共用同一組寬（--w-*），所以全部商品、依車種、依品名、依類別、搜尋結果、商品頁下方兩張的欄位起點都一樣。
+   重量：scratchpad 的 w.cjs／w2.cjs（ERP 唯讀）；ERP 出現更長的字也不會爆：品名欄內折兩行、其他欄在自己欄內折行。 */
+var ERP_LONGEST = {
+  name: ['空壓機供油邦浦迴油管'],                       /* 20 格 */
+  car: ['15B-FTE 巴士', '06NUP0727VHN'],                 /* 12 格 */
+  spec: [['無渦輪 H52.5', ''], ['74x74x72x84', '中間圓孔']],  /* 規格 12 格；規格＋年份 20 格（年份小字） */
+  brand: ['正廠(公司)'],                                 /* 10 格 */
+  qty: [[131, '台', 2, '只']],                           /* 10 格 */
+  pn: ['040692-0050T/08T']                               /* 16 格（搜尋列料號那格用） */
+};
+var COLW = null;
+function colFit() {
+  var view = document.getElementById('view');
+  var H = HEADT();
+  var names = ERP_LONGEST.name.concat([H.name]);
+  if (LANG === 'en') names = names.concat(Object.keys(NAME_EN).map(function (k) { return NAME_EN[k]; }));
+  var brands = ERP_LONGEST.brand.concat(LANG === 'en' ? Object.keys(BRAND_EN).map(function (k) { return BRAND_EN[k]; }) : [], [H.brand]);
+  function sp(cls, inner) { return '<span class="' + cls + '">' + inner + '</span>'; }
+  var html = names.map(function (v) { return sp('c-name', esc(v)); }).join('') +
+    ERP_LONGEST.car.concat([H.car]).map(function (v) { return sp('c-car', esc(v)); }).join('') +
+    ERP_LONGEST.spec.map(function (v) { return sp('c-spec', esc(v[0]) + (v[1] ? '<span class="yr">' + esc(v[1]) + '</span>' : '')); }).join('') + sp('c-spec', esc(H.spec)) +
+    brands.map(function (v) { return sp('c-brand', esc(v)); }).join('') +
+    ERP_LONGEST.qty.map(function (q) { return sp('c-qty', '<span class="qa">' + q[0] + '<span class="u">' + q[1] + '</span></span><span class="qb">＋' + q[2] + '<span class="u">' + q[3] + '</span></span>'); }).join('') + sp('c-qty', esc(H.qty));
+  var pr = document.createElement('div');
+  pr.className = 'plist colprobe'; pr.setAttribute('aria-hidden', 'true'); pr.innerHTML = html;
+  view.appendChild(pr);
+  function mx(cls, from) { var w = 0; pr.querySelectorAll('.' + cls).forEach(function (el, i) { if (from == null || i < from) w = Math.max(w, el.getBoundingClientRect().width); }); return Math.ceil(w) + 2; }
+  var zhName = mx('c-name', ERP_LONGEST.name.length + 1);
+  /* 英文版品名、品牌字比中文長：欄寬仍以 ERP 中文最長為準（品名可放寬到 1fr、品牌最多多 2 成），放不下就在自己欄內折行，不讓整張表退回兩行版 */
+  var zhBrand = mx('c-brand', ERP_LONGEST.brand.length);
+  var w = { name: Math.max(zhName, mx('c-name', ERP_LONGEST.name.length + 1)), car: mx('c-car'), spec: mx('c-spec'), brand: Math.min(mx('c-brand'), Math.round(zhBrand * 1.2)), qty: mx('c-qty') };
+  view.removeChild(pr);
+  var rs = document.documentElement.style;
+  ['name', 'car', 'spec', 'brand', 'qty'].forEach(function (k) { rs.setProperty('--w-' + k, w[k] + 'px'); });
+  rs.setProperty('--w-side', Math.max(w.brand, w.qty) + 'px');
+  var gap = parseFloat(getComputedStyle(document.documentElement).fontSize) * .8;
+  w.total = 96 + w.name + w.car + w.spec + w.brand + w.qty + gap * 5;
+  COLW = w;
+  fitWide();
+  fitSearchCols();
+}
+/* 一列一行（寬版）只在放得下「ERP 最長的五欄」時才用，不然改成照片｜品名車種規格｜品牌數量 兩行版 */
+function fitWide() { var v = document.getElementById('view'); if (COLW) v.classList.toggle('wide', v.clientWidth >= COLW.total); }
+/* 搜尋列各格寬：同樣用 ERP 最長的品名／車種／料號（業主 2026-10-30「每個搜尋欄格數減少，以 ERP 資訊字數為主」） */
+function fitSearchCols() {
+  var cs = getComputedStyle(kwName), c = null;
+  try { c = document.createElement('canvas').getContext('2d'); } catch (e) {}
+  if (!c) return;
+  c.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) * 2 + 4;
+  function wOf(arr) { return Math.ceil(arr.reduce(function (m, v) { return Math.max(m, c.measureText(v).width); }, 0) + pad); }
+  var rs = document.documentElement.style;
+  rs.setProperty('--w-in-name', wOf(ERP_LONGEST.name.concat([kwName.placeholder])) + 'px');
+  rs.setProperty('--w-in-car', wOf(ERP_LONGEST.car.concat([kwCar.placeholder])) + 'px');
+  rs.setProperty('--w-in-pn', wOf(ERP_LONGEST.pn.concat([kwPn.placeholder])) + 'px');
 }
 /* 位置列：手機只留最後兩層 */
 function crumbs(parts) {
@@ -1481,7 +1570,27 @@ function vNameItems(ni) {
   var n = NAMES[ni], items = sorted(n.items);
   return lhead([{ t: T('by_name'), href: '#n' }, { t: esc(nameTxt(n.name)) }], items.length, 'u_item', items.filter(hasPhoto)) + plist(items);
 }
-function vAll() { return lhead([{ t: T('all_items') }], ORDER.length, 'u_item', PHOTO_ITEMS) + plist(ORDER, { mode: 'grouped' }); }
+/* 全部商品：排序＋類別篩選（業主 2026-10-30「全部品項按進去之後增加排序方式還有篩選按鈕（類別）」）。
+   排序 車種（預設，依車種分段）｜品名｜品牌｜數量多｜有照片；類別＝工作站 part-class 四分法＋其他，跟首頁圖片牆同一套 */
+var ALLV = { sort: 'car', kind: '' };
+function qtyRank(x) { return (x.qty_a > 0 ? x.qty_a : 0) + (x.qty_b > 0 && x.qty_per_unit > 0 ? x.qty_b / x.qty_per_unit : 0); }
+function allBar(base) {
+  var so = [['car', T('sort_car')], ['name', T('asort_name')], ['brand', T('asort_brand')], ['qty', T('asort_qty')], ['photo', T('asort_photo')]];
+  var kinds = [['', T('all'), base.length]].concat(KIND_ORDER.map(function (k) { return [k, kindName(k), base.filter(function (x) { return kindOf(x) === k; }).length]; }).filter(function (k) { return k[2] > 0; }));
+  function chip(attr, v, label, on, n) { return '<button type="button" class="chip' + (on ? ' on' : '') + '" ' + attr + '="' + esc(v) + '" aria-pressed="' + on + '">' + label + (n != null ? '<b>' + n + '</b>' : '') + '</button>'; }
+  return '<div class="lsort allbar"><div class="arow"><span class="chiplab">' + T('list_sort') + '</span>' + so.map(function (o) { return chip('data-asort', o[0], o[1], ALLV.sort === o[0]); }).join('') + '</div>' +
+    '<div class="arow"><span class="chiplab">' + T('kind_lab') + '</span>' + kinds.map(function (k) { return chip('data-akind', k[0], k[1], ALLV.kind === k[0], k[2]); }).join('') + '</div></div>';
+}
+function vAll() {
+  var items = ALLV.kind ? ORDER.filter(function (x) { return kindOf(x) === ALLV.kind; }) : ORDER.slice();
+  var srt = ALLV.sort, mode = 'all';
+  if (srt === 'name') items.sort(function (a, b) { return cmp(nameTxt(a.name), nameTxt(b.name)) || cmp(a.car_code, b.car_code) || a._o - b._o; });
+  else if (srt === 'brand') items.sort(function (a, b) { return cmp(brandClass(a.brand), brandClass(b.brand)) || cmp(nameTxt(a.name), nameTxt(b.name)) || a._o - b._o; });
+  else if (srt === 'qty') items.sort(function (a, b) { return (qtyRank(b) - qtyRank(a)) || a._o - b._o; });
+  else if (srt === 'photo') items.sort(function (a, b) { return (hasPhoto(b) - hasPhoto(a)) || a._o - b._o; });
+  else mode = 'grouped';
+  return lhead([{ t: T('all_items') }], items.length, 'u_item', items.filter(hasPhoto)) + allBar(ORDER) + plist(items, { mode: mode });
+}
 /* 照類別找：類別 → 品名 → 商品（業主 2026-10-26「要加」） */
 function vKinds() {
   var h = lhead([{ t: T('by_kind') }], KINDS.length, 'u_kind') + '<div class="nlist two">';
@@ -1683,6 +1792,8 @@ function onDataReady(items) {
   else if (mainHash === 'home') drawMain('home', false, true);
   if (!sheet.hidden) drawSheet();
   updateBar(); setLinks(); updateAddBtn(); refreshMarks();
+  CAR_LIST = null;
+  if (sugFor && document.activeElement === sugFor) sugDraw();
 }
 function onDataFail() { if (PENDING) drawMain(mainHash, false, true); }
 /* 浮動「上一頁」（業主 2026-10-26 第 5 點）：頁面上方那顆「← 回上一頁」捲出畫面後，左下角浮一顆，不用捲回去 */
@@ -1745,7 +1856,7 @@ function anyKw() { return !!(kw.value.trim() || kwName.value.trim() || kwCar.val
 function showClear() { var on = anyKw(); kwclear.hidden = !on; document.getElementById('searchForm').classList.toggle('hc', on); }
 function setKw(v) { kw.value = v; if (!v) { kwName.value = ''; kwCar.value = ''; kwPn.value = ''; } showClear(); if (!v) fitPh(); }
 /* 提示字：放得下就用「品名、車種、料號」（2026-10-26 業主：原廠號改叫料號）；窄（字放大、頁面縮放）就換短的，不讓尾巴被切掉 */
-function PHS() { return [T('ph_long'), T('ph_short')]; }
+function PHS() { return [T('ph_long'), T('ph_short'), T('ph_tiny')]; }
 var phCtx = null;
 function fitPh() {
   if (kw.value) return;
@@ -1775,8 +1886,106 @@ kw.addEventListener('input', function (e) { if (composing || e.isComposing) retu
   el.addEventListener('compositionstart', function () { composing = true; });
   el.addEventListener('compositionend', function () { composing = false; onKw(); });
   el.addEventListener('input', function (e) { if (composing || e.isComposing) return; onKw(); });
-  el.addEventListener('keydown', function (e) { if (e.key === 'Enter') el.blur(); });
 });
+/* ── 分欄下拉提示（業主 2026-10-30：跟工作站庫存查詢一樣，打「活」就列出所有有「活」的品名；車種、料號也是，料號只比英數）。
+   一個框跟著正在打的那格走；↑↓ 選、Enter 帶入、Esc 收起；點一列＝把那個值填進去並馬上篩 ── */
+var sugBox = document.createElement('div');
+sugBox.className = 'sugbox'; sugBox.id = 'sugbox'; sugBox.setAttribute('role', 'listbox'); sugBox.hidden = true;
+document.body.appendChild(sugBox);
+var sugFor = null, sugList = [], sugAt = -1, SUG_MAX = 40, CAR_LIST = null;
+function carList() {
+  if (CAR_LIST) return CAR_LIST;
+  var m = new Map();
+  DATA.forEach(function (x) { if (has(x.car_code)) m.set(x.car_code, (m.get(x.car_code) || 0) + 1); });
+  CAR_LIST = Array.from(m, function (e) { return { v: e[0], k: norm(e[0]), n: e[1] }; });
+  return CAR_LIST;
+}
+function sugItems(el) {
+  if (!READY) return [];
+  var q = el.value, out = [];
+  if (el === kwName) {
+    var qn = norm(q); if (!qn) return [];
+    var vs = variants(qn);
+    NAMES.forEach(function (n) {
+      if (!n.name) return;
+      var k = norm(n.name), en = norm(own(NAME_EN, String(n.name).trim()) ? NAME_EN[String(n.name).trim()] : '');
+      var hit = vs.some(function (v) { return k.indexOf(v) >= 0 || (en && en.indexOf(v) >= 0); });
+      if (hit) out.push({ v: n.name, label: nameTxt(n.name), n: n.items.length, r: vs.some(function (v) { return k.indexOf(v) === 0; }) ? 0 : 1 });
+    });
+    out.sort(function (a, b) { return (a.r - b.r) || (b.n - a.n) || cmp(a.label, b.label); });
+  } else if (el === kwCar) {
+    var qc = norm(q); if (!qc) return [];
+    carList().forEach(function (c) { var i = c.k.indexOf(qc); if (i >= 0) out.push({ v: c.v, label: c.v, n: c.n, r: c.k === qc ? 0 : i === 0 ? 1 : 2, code: true }); });
+    out.sort(function (a, b) { return (a.r - b.r) || cmp(a.label, b.label); });
+  } else {
+    var qp = pnKey(q); if (!qp) return [];
+    var seen = new Map();
+    DATA.forEach(function (x) {
+      if (!x._pk) return;
+      var i = x._pk.indexOf(qp); if (i < 0) return;
+      var key = x.part_no, e = seen.get(key);
+      if (!e) { e = { v: x.part_no, label: x.part_no, n: 0, r: x._pk === qp ? 0 : i === 0 ? 1 : 2, sub: nameTxt(x.name), car: has(x.car_code) ? x.car_code : '', code: true }; seen.set(key, e); out.push(e); }
+      e.n++;
+    });
+    out.sort(function (a, b) { return (a.r - b.r) || cmp(a.label, b.label); });
+  }
+  return out;
+}
+function sugPlace() {
+  if (!sugFor || sugBox.hidden) return;
+  var r = sugFor.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+  var w = Math.min(vw - 16, Math.max(r.width, sugFor === kwPn ? 420 : 260));
+  sugBox.style.width = w + 'px';
+  sugBox.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+  sugBox.style.top = (r.bottom + 4) + 'px';
+}
+function sugDraw() {
+  var el = sugFor;
+  if (!el || document.activeElement !== el) { sugHide(); return; }
+  sugList = sugItems(el); sugAt = -1;
+  if (!sugList.length) {
+    if (el === kwPn && pnKey(el.value) && READY) { sugBox.innerHTML = '<div class="sugnone">' + T('pn_sug_none') + '</div>'; sugBox.hidden = false; sugPlace(); }
+    else sugHide();
+    return;
+  }
+  var more = sugList.length - SUG_MAX;
+  sugBox.innerHTML = sugList.slice(0, SUG_MAX).map(function (o, i) {
+    return '<div class="sugrow' + (el === kwPn ? ' pn' : '') + '" role="option" data-sug="' + i + '" id="sug-' + i + '">' +
+      '<span class="sv' + (o.code ? ' code' : '') + '">' + esc(o.label) + '</span>' +
+      (el === kwPn ? '<span class="ss">' + esc(o.sub) + '</span><span class="sc code">' + esc(o.car) + '</span>' : '<span class="sn">' + o.n + '</span>') + '</div>';
+  }).join('') + (more > 0 ? '<div class="sugnone">' + T('sug_more', { n: more }) + '</div>' : '');
+  sugBox.hidden = false;
+  sugPlace();
+}
+function sugHide() { sugBox.hidden = true; sugAt = -1; }
+function sugMark() {
+  sugBox.querySelectorAll('.sugrow').forEach(function (r, i) { r.classList.toggle('on', i === sugAt); if (i === sugAt) r.scrollIntoView({ block: 'nearest' }); });
+}
+function sugPick(i) {
+  var o = sugList[i]; if (!o || !sugFor) return;
+  sugFor.value = o.v;
+  sugHide();
+  onKw();
+}
+sugBox.addEventListener('mousedown', function (e) { e.preventDefault(); });   /* 點下拉時輸入框不失焦 */
+sugBox.addEventListener('click', function (e) { var r = e.target.closest('[data-sug]'); if (r) sugPick(+r.getAttribute('data-sug')); });
+[kwName, kwCar, kwPn].forEach(function (el) {
+  el.setAttribute('aria-autocomplete', 'list'); el.setAttribute('aria-controls', 'sugbox');
+  el.addEventListener('focus', function () { sugFor = el; sugDraw(); });
+  el.addEventListener('input', function (e) { if (composing || e.isComposing) return; sugFor = el; sugDraw(); });
+  el.addEventListener('compositionend', function () { sugFor = el; sugDraw(); });
+  el.addEventListener('blur', function () { if (sugFor === el) sugHide(); });
+  el.addEventListener('keydown', function (e) {
+    var open = !sugBox.hidden && sugList.length;
+    if (e.key === 'ArrowDown' && open) { e.preventDefault(); sugAt = Math.min(sugAt + 1, Math.min(sugList.length, SUG_MAX) - 1); sugMark(); }
+    else if (e.key === 'ArrowUp' && open) { e.preventDefault(); sugAt = Math.max(sugAt - 1, 0); sugMark(); }
+    else if (e.key === 'Escape' && !sugBox.hidden) { e.preventDefault(); e.stopPropagation(); sugHide(); }
+    else if (e.key === 'Enter') { if (open && sugAt >= 0) { e.preventDefault(); sugPick(sugAt); } else { sugHide(); el.blur(); } }
+  });
+});
+window.addEventListener('resize', sugPlace);
+window.addEventListener('scroll', sugPlace, { passive: true });
+if (window.matchMedia) { var mqOne = window.matchMedia('(min-width:1100px)'); if (mqOne.addEventListener) mqOne.addEventListener('change', function () { fitSearchCols(); sugPlace(); }); }
 document.getElementById('searchForm').addEventListener('submit', function (e) { e.preventDefault(); kw.blur(); });
 kwclear.addEventListener('click', function () { clearSearch(); kw.focus(); });
 function clearSearch() { setKw(''); if (curHash() === 'find') goBack(); }
@@ -2098,11 +2307,13 @@ document.addEventListener('keydown', function (e) {
 
 /* ── 頁面內點擊 ── */
 view.addEventListener('click', function (e) {
-  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-kind],[data-wsort],[data-lsort],[data-tadd],[data-pstep],#addq');
+  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-kind],[data-wsort],[data-lsort],[data-asort],[data-akind],[data-tadd],[data-pstep],#addq');
   if (!t) return;
   if (t.hasAttribute('data-pstep')) { var ps = document.getElementById('pstrip'); if (ps) ps.scrollBy({ left: ps.clientWidth * Number(t.getAttribute('data-pstep')), behavior: 'smooth' }); return; }
   if (t.hasAttribute('data-kind')) { wallKind = t.getAttribute('data-kind'); wallReset(); redrawWall(false); return; }
   if (t.hasAttribute('data-wsort')) { wallSort = t.getAttribute('data-wsort'); wallReset(); redrawWall(false); return; }
+  if (t.hasAttribute('data-asort')) { ALLV.sort = t.getAttribute('data-asort'); drawMain(mainHash, true, true); return; }
+  if (t.hasAttribute('data-akind')) { ALLV.kind = t.getAttribute('data-akind'); drawMain(mainHash, true, true); return; }
   if (t.hasAttribute('data-lsort')) { var ls = t.getAttribute('data-lsort').split(':'); LSORT[ls[0]] = ls[1]; drawMain(mainHash, true, true); return; }
   if (t.hasAttribute('data-tadd')) { var tid = t.getAttribute('data-tadd'); if (inInq(tid)) go('q'); else { addInq(tid); live.textContent = T('added_live'); } return; }
   if (t.id === 'addq') { var id = t.getAttribute('data-id'); if (inInq(id)) go('q'); else addInq(id); return; }
@@ -2121,9 +2332,13 @@ function onLangChange() {
   if (mainHash !== null) drawMain(mainHash, true, true);
   drawSheet();
   fitPh();
+  colFit();
 }
 setupContacts();
 updateBar();
+colFit();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(colFit);
+if (window.ResizeObserver) new ResizeObserver(fitWide).observe(document.getElementById('view')); else window.addEventListener('resize', fitWide);
 onNav();
 loadCatalog();
 })();
