@@ -103,14 +103,22 @@ h1,h2{text-wrap:balance}
 .hdr{display:contents}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:31;background:var(--head);color:var(--head-ink)}
 .top .inner{padding-block:.45rem .3rem}
-/* 第五版（業主 2026-11-02：還是很卡，要像車種標題被取代那樣絲滑）：手指在滑的時候 JS 完全不碰畫面。
-   搜尋列平常就是一般內容，往下滑自然被 logo 列蓋過去（瀏覽器自己捲，跟卡頂標題一樣順）；往上滑超過一小段才把它
-   固定在 logo 列底下、用一次 0.22 秒滑入；再往下滑一小段就滑出去。.sbslot 替它在原位留著位子，固定時內容不會跳 */
-.sbar{position:relative;z-index:30;background:var(--head);color:var(--head-ink)}
+/* 第六版（業主 2026-11-02：第五版往上收很順，往下拉出來也要一樣絲滑）：兩個方向都交給瀏覽器原生捲動，手指在滑的時候 JS 完全不碰畫面。
+   做法：.sbwrap 是一張蓋住整份文件的透明絕對定位層（body 是它的定位基準），.sbar 在裡面用 sticky，
+   上界 top＝logo 列底下再減自己的高度（＝完全藏進 logo 列底下），下界 bottom＝剛好貼在 logo 列底下（＝完全露出）；
+   .sbar 的「原本位置」由 margin-top（--sb-w，文件座標）決定：往下捲它跟著內容往上走（最多到上界），往上捲跟著內容往下走（最多到下界），
+   兩邊都是 1:1 原生。JS 只在手指換方向那一瞬間把 --sb-w 改成「現在所在的位置」一次，之後又是純原生。
+   .sbslot 在最上面留著它的位子（--sb-h），捲到最上面時 .sbar 剛好落回原位。 */
+body{position:relative}
 .sbslot{height:var(--sb-h,auto)}
-body.sb-peek .sbar{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px));will-change:transform;transition:transform .22s cubic-bezier(.2,.7,.3,1)}
-body.sb-pre .sbar,body.sb-out .sbar{transform:translateY(-100%)}
-body.sb-pre .sbar{transition:none}
+.sbwrap{position:absolute;top:0;bottom:0;left:0;right:0;z-index:30;pointer-events:none}
+.sbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px) - var(--sb-h,0px));
+  bottom:calc(100vh - env(safe-area-inset-top,0px) - var(--hd-h,0px) - var(--sb-h,0px));
+  bottom:calc(100dvh - env(safe-area-inset-top,0px) - var(--hd-h,0px) - var(--sb-h,0px));
+  pointer-events:auto;background:var(--head);color:var(--head-ink)}
+/* 原本位置用前面一個墊片撐出來，不能用 margin-top：sticky 的外距盒不准跑出包層，用 margin 的話就不能往上拉回 logo 列底下 */
+.sbpad{height:var(--sb-w,var(--hd-h,0px))}
+body.kwfocus .sbar{top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px))}  /* 打字中（鍵盤開著）搜尋列釘在 logo 列底下不收 */
 .sbar .inner{padding-block:.1rem .6rem}
 .shop{display:inline-flex;align-items:center;gap:.55rem;min-height:48px;max-width:100%;text-decoration:none;font-weight:700;font-size:1.12rem;letter-spacing:.06em;white-space:nowrap;justify-self:start}
 .shop small{font-size:1rem;font-weight:500;color:var(--head-muted);letter-spacing:.04em}
@@ -156,7 +164,8 @@ body.sb-pre .sbar{transition:none}
     position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--head);color:var(--head-ink);max-width:1240px;margin-inline:auto;
     padding:.45rem max(16px,env(safe-area-inset-right,0px)) .6rem max(16px,env(safe-area-inset-left,0px));
     box-shadow:0 0 0 100vmax var(--head);clip-path:inset(0 -100vmax)}  /* 底色拉滿整個寬度，格子本身置中 1240 */
-  .hdr>.top,.hdr>.sbslot,.hdr>.sbslot>.sbar,.top>.gut,.sbar>.gut,.top .inner,.sbar .inner,.hdrow,.kwf{display:contents}
+  .hdr>.top,.hdr>.sbslot,.sbslot>.sbwrap,.sbwrap>.sbar,.top>.gut,.sbar>.gut,.top .inner,.sbar .inner,.hdrow,.kwf{display:contents}
+  .sbpad{display:none}
   .shop{order:1;margin-right:.7rem}
   #kwName{order:2}#kwCar{order:3}#kwPn{order:4}
   .search{order:5}
@@ -389,8 +398,6 @@ a.prow:active{background:var(--row-hover)}
 .phead{min-height:2.3rem;padding-block:.2rem;color:var(--muted);font-size:.86rem;font-weight:500}
 /* 車種分段標題往下滑時卡在頂端列下面（業主 2026-11-01：一路滑標題要停在 4D31）；背景不透明蓋住底下的列 */
 .pseg{grid-column:1/-1;display:flex;align-items:flex-end;min-height:3rem;padding:.8rem .2rem .25rem;border-bottom:2px solid var(--rule);position:sticky;top:calc(var(--top-h,0px) + var(--fb-h,0px) - 1px);z-index:4;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
-/* 搜尋列滑入／滑出那 0.22 秒，卡頂的排序列、車種分段、相關列標題跟著一起下移／上移（只在那一下動，手指滑動中不動） */
-.lsort,.wall-bar,.rel h2,.pseg{transition:top .22s cubic-bezier(.2,.7,.3,1)}
 .lazyend{grid-column:1/-1;min-height:1px}
 .pseg>span{display:flex;align-items:baseline;gap:.7rem;min-width:0}
 .pseg .k{font-family:var(--font-code);font-weight:600;font-size:1.3rem;letter-spacing:.02em;overflow-wrap:anywhere}
@@ -608,7 +615,6 @@ html.lock .fback{display:none}
 .lb-hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + .7rem);margin:0;padding:0 1rem;text-align:center;font-size:.92rem;line-height:1.4;color:var(--lb-ink);pointer-events:none}
 
 @media (prefers-reduced-motion:no-preference){.strip,.lb-strip{scroll-behavior:smooth}}
-@media (prefers-reduced-motion:reduce){body.sb-peek .sbar,.lsort,.wall-bar,.rel h2,.pseg{transition:none}}
 </style>
 </head>
 <body data-gen="115/11/02">
@@ -621,7 +627,7 @@ html.lock .fback{display:none}
       <button type="button" class="langbtn" id="langBtn" data-i18n="lang_btn" data-i18n-aria="lang_label" aria-label="Switch to English">EN</button>
     </div>
   </div></div></div>
-  <div class="sbslot"><div class="sbar" id="sbar"><div class="gut"><div class="inner">
+  <div class="sbslot"><div class="sbwrap"><div class="sbpad"></div><div class="sbar" id="sbar"><div class="gut"><div class="inner">
     <form class="search" role="search" id="searchForm">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
       <input id="kw" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="品名、車種、料號" aria-label="搜尋品名、車種、料號" data-i18n-aria="kw_aria">
@@ -633,7 +639,7 @@ html.lock .fback{display:none}
       <input id="kwCar" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="車種" aria-label="車種" data-i18n-ph="kwf_car" data-i18n-aria="kwf_car">
       <input id="kwPn" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="料號" aria-label="料號" data-i18n-ph="kwf_pn" data-i18n-aria="kwf_pn">
     </div>
-  </div></div></div></div>
+  </div></div></div></div></div>
 </header>
 <div class="banner"><div class="gut"><div class="inner">
   <ol class="steps" aria-label="怎麼買"><li><span class="no">1.</span><span data-i18n="step1">按加入詢價單</span></li><li><span class="no">2.</span><span id="step3">分享至禾賀公司 LINE 聊天視窗詢價</span></li></ol>
@@ -1814,7 +1820,7 @@ function drawMain(h, back, force) {
   /* 回上一頁要回到原位：清單是分批印的，先把位置以前的批都接上再捲 */
   while (back && LAZY && document.documentElement.scrollHeight < y + window.innerHeight * 2 && lazyMore()) {}
   if (!force) window.scrollTo(0, y);
-  lastY = window.scrollY; upAcc = downAcc = 0;   /* 換頁捲到定位不算手指滑動 */
+  lastY = window.scrollY; dir = 0; sbReset();   /* 換頁捲到定位不算手指滑動 */
   watchLazy();
   watchBack();
   watchWall();
@@ -1879,16 +1885,14 @@ var fback = document.getElementById('fback'), fbackObs = null;
 var topEl = document.querySelector('.top'), sbarEl = document.getElementById('sbar'), hdrEl = document.querySelector('.hdr');
 var topHLast = -1, hdHLast = -1, fbHLast = -1, sbHLast = -1;
 function setVar(name, v, last) { if (Math.abs(v - last) > 0.01) document.documentElement.style.setProperty(name, v + 'px'); return v; }
-/* 搜尋列收／拉 第五版（業主 2026-11-02：第三、四版「順著手指」在 iPhone 還是很卡，要像車種標題被取代那樣絲滑）：
-   iPhone 捲動是瀏覽器自己在另一條線跑，JS 跟著每一格改位置永遠慢半拍，怎麼磨都不會有原生的順。所以改成手指滑動時 JS 完全不動畫面：
-   ・搜尋列（#sbar）平常是一般內容，往下滑自然被卡頂的 logo 列蓋過去（純瀏覽器捲動）。
-   ・往上滑累積超過 PEEK_STEP 且搜尋列已經捲出畫面 → 把它改成固定在 logo 列底下（body.sb-peek），用一次 0.22 秒滑入；.sbslot 在原位留著位子，內容不跳。
-   ・固定狀態下再往下滑累積超過 PEEK_STEP → 0.22 秒滑出，結束後放回原位（原位此時在畫面外，看不到切換）。
-   ・捲回最上面（y=0）→ 直接放回原位（固定位置跟原位剛好重合，看不出切換）。
-   ・--top-h＝logo 列底緣（固定狀態再加搜尋列高度），排序列／車種分段這些卡頂元素的 top 跟著變，CSS 給它們同樣 0.22 秒過渡。
-   輸入框聚焦（鍵盤打開）時搜尋列一律留著。電腦版（≥1100）表頭是一整塊 sticky，不走這套。 */
-var M = { desktop: false, sbH: 0, fbH: 0, hdH: 0 }, fbEl = null, fbObs = null;
-var PEEK = false, peekTimer = 0, upAcc = 0, downAcc = 0, PEEK_STEP = 24, bodyCl = document.body.classList;
+/* 搜尋列收／拉 第六版（業主 2026-11-02：第五版往上收很順，往下拉出來也要一樣絲滑）。
+   第三、四版 JS 跟著手指每格改位置在 iPhone 永遠慢半拍；第五版拉出來是一次 0.22s 動畫，跟手指脫節。
+   現在兩個方向都是瀏覽器原生捲動（CSS 見 .sbwrap／.sbar 註解）：.sbar 是 sticky，上界＝藏進 logo 列底下、下界＝貼在 logo 列底下，
+   它的「原本位置」--sb-w（文件座標）決定它跟著內容走到哪。JS 只做一件事：手指換方向那一刻，把 --sb-w 設成「它現在在的位置」，
+   這樣往下捲會從現在的位置開始 1:1 往上收、往上捲會從現在的位置開始 1:1 往下拉，之後 JS 完全不碰畫面。
+   排序列／車種分段這些卡頂元素固定貼在 logo 列底下（--top-h），搜尋列拉出來時蓋在它們上面，收回去就看得到。
+   打字中（body.kwfocus）搜尋列釘住不收。電腦版（≥1100）表頭是一整塊 sticky，不走這套。 */
+var M = { desktop: false, sbH: 0, fbH: 0, hdH: 0 }, fbEl = null, fbObs = null, sbWLast = -1, dir = 0;
 function measure() {
   M.desktop = getComputedStyle(hdrEl).display !== 'contents';
   M.hdH = M.desktop ? 0 : topEl.offsetHeight;
@@ -1901,45 +1905,40 @@ function measure() {
 }
 function apply() {
   var topB = (M.desktop ? hdrEl : topEl).getBoundingClientRect().bottom;   /* 只讀這一個，而且先讀再寫 */
-  if (M.desktop && PEEK) peekOff(true);
-  topHLast = setVar('--top-h', Math.max(topB + (PEEK ? M.sbH : 0), 0), topHLast);
+  topHLast = setVar('--top-h', Math.max(topB, 0), topHLast);
   fbHLast = setVar('--fb-h', M.fbH, fbHLast);
 }
-function peekOn() {
-  if (PEEK || M.desktop) return;
-  PEEK = true; clearTimeout(peekTimer);
-  bodyCl.remove('sb-out'); bodyCl.add('sb-pre', 'sb-peek');
-  void sbarEl.offsetHeight;   /* 先放到藏起來的位置（無過渡），下一步才滑下來 */
-  bodyCl.remove('sb-pre');
-  apply();
+/* 把搜尋列的「原本位置」設成畫面上第 c 像素（文件座標＝c＋捲動量）；c 夾在「全藏」～「全露」之間 */
+function sbPlace(c, y) {
+  if (M.desktop) return;
+  var topB = topEl.getBoundingClientRect().bottom;
+  c = Math.max(topB - M.sbH, Math.min(topB, c));
+  sbWLast = setVar('--sb-w', c + y, sbWLast);
 }
-function peekOff(instant) {
-  if (!PEEK) return;
-  PEEK = false; clearTimeout(peekTimer);
-  apply();
-  if (instant) { bodyCl.remove('sb-peek', 'sb-out', 'sb-pre'); return; }
-  bodyCl.add('sb-out');
-  peekTimer = setTimeout(function () { bodyCl.remove('sb-peek', 'sb-out'); }, 260);
-}
+function sbPlaceHere(y) { sbPlace(sbarEl.getBoundingClientRect().top, y); }   /* 停在現在的位置 */
 function setTopH() { measure(); return topHLast; }   /* 回傳目前卡在上面那疊的底緣（watchBack 的「上一頁」鈕被蓋住判斷用） */
 function kwFocused() { var a = document.activeElement; return a === kw || a === kwName || a === kwCar || a === kwPn; }
-/* 換頁時歸零：打字中（結果邊打邊重畫）搜尋列要留著，其他情況放回原位 */
-function barsReset() {
-  upAcc = downAcc = 0;
-  if (kwFocused() && window.scrollY > 0) { measure(); if (!PEEK && window.scrollY > M.sbH) peekOn(); return; }
-  peekOff(true); measure();
+/* 換頁時歸零：還在最上面附近＝回到原位（slot）；回上一頁捲到中間＝藏起來；打字中（結果邊打邊重畫）不動它 */
+function barsReset() { dir = 0; measure(); }
+function sbReset() {   /* drawMain 捲到定位之後才呼叫 */
+  if (M.desktop || kwFocused()) return;
+  var y = Math.max(0, window.scrollY);
+  if (y < M.sbH) sbWLast = setVar('--sb-w', M.hdH, sbWLast);
+  else sbPlace(topEl.getBoundingClientRect().bottom - M.sbH, y);
 }
+/* 鍵盤打開：先釘住；收鍵盤：先把原本位置設成現在的位置再解除，才不會跳 */
+sbarEl.addEventListener('focusin', function () { if (M.desktop) return; sbPlace(topEl.getBoundingClientRect().bottom, Math.max(0, window.scrollY)); document.body.classList.add('kwfocus'); });
+sbarEl.addEventListener('focusout', function () { setTimeout(function () { if (kwFocused()) return; sbPlaceHere(Math.max(0, window.scrollY)); document.body.classList.remove('kwfocus'); }, 0); });
 if (window.ResizeObserver) { var tro = new ResizeObserver(function () { measure(); }); tro.observe(topEl); tro.observe(sbarEl); tro.observe(hdrEl); }
 window.addEventListener('resize', measure);
 var lastY = window.scrollY;
 window.addEventListener('scroll', function () {
   var y = Math.max(0, window.scrollY), dy = y - lastY; lastY = y;
-  if (M.desktop) return;
-  if (dy < 0) { upAcc -= dy; downAcc = 0; } else { downAcc += dy; upAcc = 0; }
-  if (y <= 0) { peekOff(true); return; }   /* 最上面：固定位置跟原位重合，直接放回 */
-  if (kwFocused()) { if (!PEEK && y > M.sbH) peekOn(); return; }
-  if (!PEEK) { if (upAcc >= PEEK_STEP && y > M.sbH) peekOn(); }
-  else if (downAcc >= PEEK_STEP && y >= M.sbH) peekOff(false);
+  if (M.desktop || !dy) return;
+  var d = dy < 0 ? -1 : 1;
+  if (d === dir) return;            /* 同方向：純原生，JS 不碰 */
+  dir = d;
+  if (!kwFocused()) sbPlaceHere(y);  /* 換方向：從現在的位置開始跟著走 */
 }, { passive: true });
 function watchBack() {
   if (fbackObs) { fbackObs.disconnect(); fbackObs = null; }
