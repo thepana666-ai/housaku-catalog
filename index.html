@@ -97,17 +97,20 @@ h1,h2{text-wrap:balance}
 .gut{padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
 .inner{max-width:900px;margin-inline:auto}
 
-/* ── 頂列 ── */
-/* 往下滑時搜尋那兩列跟著捲走、只留 logo 那列卡頂（業主 2026-11-01：滑動時商品可視範圍只剩一半）：
-   sticky 的 top 設成負的「搜尋列高度」（--top-off，setTopH 量），捲回最上面才又看到搜尋格。電腦版一行本來就不占地方，--top-off＝0 */
-.top{position:sticky;top:calc(env(safe-area-inset-top,0px) - var(--top-off,0px));z-index:30;background:var(--head);color:var(--head-ink)}
-.top .inner{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.35rem 1.2rem;padding-block:.45rem .6rem}
+/* ── 頂列（業主 2026-11-01 第二版）：拆成兩塊各自卡頂。.top＝logo 那一列永遠在最上；.sbar＝搜尋兩列，往下滑時收到 .top 底下、往上滑就滑回來
+   （手機 1.8 萬項滑到一半想回去搜尋，不必捲到最上面）。兩塊都是 body 的直接子孫（.hdr display:contents），sticky 才不會被短的父層框住；
+   電腦版（≥1100）.hdr 自己變成一行的格子，兩塊展平 ── */
+.hdr{display:contents}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:31;background:var(--head);color:var(--head-ink)}
+.top .inner{padding-block:.45rem .3rem}
+.sbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px));z-index:30;background:var(--head);color:var(--head-ink);transition:transform .25s ease}
+.sbar .inner{padding-block:.1rem .6rem}
+.bars-hide .sbar{transform:translateY(-100%)}
+@media (prefers-reduced-motion:reduce){.sbar,.allbar{transition:none}}
 .shop{display:inline-flex;align-items:center;gap:.55rem;min-height:48px;max-width:100%;text-decoration:none;font-weight:700;font-size:1.12rem;letter-spacing:.06em;white-space:nowrap;justify-self:start}
 .shop small{font-size:1rem;font-weight:500;color:var(--head-muted);letter-spacing:.04em}
 #shopName{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .hdrow{display:flex;align-items:center;gap:.6rem;min-width:0}
-/* 手機往下滑：整個頂列往上捲掉「搜尋那兩列」的高度（.top 的 top 是負的 --top-off），logo 這一列自己再卡在最上面、底色蓋住捲上去的搜尋格 */
-@media (max-width:1099px){.hdrow{position:sticky;top:calc(env(safe-area-inset-top,0px) + .45rem);z-index:2;background:var(--head)}}
 .hdrow .shop{min-width:0}
 .hdrow .homebtn{margin-left:auto}
 .hdrow .homebtn[hidden]+.themebtn{margin-left:auto}
@@ -136,22 +139,24 @@ h1,h2{text-wrap:balance}
 .search input::-webkit-search-cancel-button{display:none}
 .search.hc input{padding-right:4.4rem}  /* 只填分欄、模糊那格空著時，「清除」鈕在右邊：提示字不能跑到鈕底下 */
 .kwf{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:.4rem;margin-top:.4rem;min-width:0}
-@media (min-width:720px){.kwf{grid-column:2;margin-top:0}}  /* 電腦：分欄三格放在模糊那格正下方，不撐寬左邊 logo 那欄 */
 .kwf input{display:block;width:100%;min-width:0;height:40px;border:1.5px solid var(--search-line);border-radius:6px;background:var(--field);color:var(--field-ink);padding:0 .6rem;font-size:max(16px,.95rem);-webkit-appearance:none;appearance:none}
 .kwf input::placeholder{color:var(--field-ph)}
 .kwf input:focus{outline:none;border-color:var(--brass)}
 .kwf input::-webkit-search-cancel-button{display:none}
 .kwclear{position:absolute;right:2px;top:2px;bottom:2px;min-width:4rem;border:0;border-radius:0 4px 4px 0;background:transparent;color:var(--brass-ink);font-weight:700;font-size:.95rem}
-@media (max-width:719px){.top .inner{grid-template-columns:minmax(0,1fr);gap:.15rem}}
 /* 電腦版搜尋列一行（業主 2026-10-30）：logo｜品名｜車種｜料號｜模糊｜鈕。前三格的寬＝ERP 最長品名／車種／料號（fitSearchCols 量好放 --w-in-*），剩下的都給模糊那格。
    頂列在這個寬度放寬到 1240px（內容區仍是 900），放不下五格的窄螢幕維持兩行 */
 @media (min-width:1100px){
-  .top .inner{max-width:1240px;grid-template-columns:auto var(--w-in-name,9em) var(--w-in-car,7em) var(--w-in-pn,9em) minmax(9em,1fr) auto auto auto;gap:0 .5rem}
-  .top .hdrow,.top .kwf{display:contents}
-  .top .shop{order:1;margin-right:.7rem}
+  .hdr{display:grid;grid-template-columns:auto var(--w-in-name,9em) var(--w-in-car,7em) var(--w-in-pn,9em) minmax(9em,1fr) auto auto auto;align-items:center;gap:0 .5rem;
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--head);color:var(--head-ink);max-width:1240px;margin-inline:auto;
+    padding:.45rem max(16px,env(safe-area-inset-right,0px)) .6rem max(16px,env(safe-area-inset-left,0px));
+    box-shadow:0 0 0 100vmax var(--head);clip-path:inset(0 -100vmax)}  /* 底色拉滿整個寬度，格子本身置中 1240 */
+  .hdr>.top,.hdr>.sbar,.top>.gut,.sbar>.gut,.top .inner,.sbar .inner,.hdrow,.kwf{display:contents}
+  .bars-hide .sbar{transform:none}
+  .shop{order:1;margin-right:.7rem}
   #kwName{order:2}#kwCar{order:3}#kwPn{order:4}
-  .top .search{order:5}
-  .top .homebtn{order:6;margin-left:.3rem}.top .themebtn{order:7}#langBtn{order:8}
+  .search{order:5}
+  .homebtn{order:6;margin-left:.3rem}.themebtn{order:7}#langBtn{order:8}
   .hdrow .homebtn[hidden]+.themebtn{margin-left:.3rem}
   .kwf input,.search input{height:44px}
   .kwf input{font-size:1rem}
@@ -349,7 +354,8 @@ html.lock .totop{display:none}
 
 /* ── 分類清單（廠牌／車種／品名） ── */
 .lsort{display:flex;align-items:center;gap:.45rem;margin:0 0 .5rem;padding:.35rem 0;position:sticky;top:calc(var(--top-h,0px) - 1px);z-index:5;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
-.allbar{flex-direction:column;align-items:stretch;gap:.35rem;position:static}  /* 排序／類別列不卡頂（業主 2026-11-01：滑動時商品只剩一半畫面） */
+.allbar{flex-direction:column;align-items:stretch;gap:.35rem;transition:transform .25s ease}  /* 跟搜尋列一起：往下滑收起來、往上滑回來（業主 2026-11-01） */
+.bars-hide .allbar{transform:translateY(calc(-100% - var(--top-h,0px)))}
 .allbar .arow{display:flex;align-items:center;gap:.45rem;overflow-x:auto;scrollbar-width:none;min-width:0}
 .allbar .arow::-webkit-scrollbar{display:none}
 .nlist{display:grid;border-top:2px solid var(--rule)}
@@ -379,7 +385,7 @@ a.prow:active{background:var(--row-hover)}
 @media (hover:hover){a.prow:hover{background:var(--row-hover)}}
 .phead{min-height:2.3rem;padding-block:.2rem;color:var(--muted);font-size:.86rem;font-weight:500}
 /* 車種分段標題往下滑時卡在頂端列下面（業主 2026-11-01：一路滑標題要停在 4D31）；背景不透明蓋住底下的列 */
-.pseg{grid-column:1/-1;display:flex;align-items:flex-end;min-height:3rem;padding:.8rem .2rem .25rem;border-bottom:2px solid var(--rule);position:sticky;top:calc(var(--top-h,0px) - 1px);z-index:4;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
+.pseg{grid-column:1/-1;display:flex;align-items:flex-end;min-height:3rem;padding:.8rem .2rem .25rem;border-bottom:2px solid var(--rule);position:sticky;top:calc(var(--top-h,0px) + var(--fb-h,0px) - 1px);z-index:4;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
 .lazyend{grid-column:1/-1;min-height:1px}
 .pseg>span{display:flex;align-items:baseline;gap:.7rem;min-width:0}
 .pseg .k{font-family:var(--font-code);font-weight:600;font-size:1.3rem;letter-spacing:.02em;overflow-wrap:anywhere}
@@ -600,14 +606,16 @@ html.lock .fback{display:none}
 </style>
 </head>
 <body data-gen="115/11/01">
-<header class="top">
-  <div class="gut"><div class="inner">
+<header class="hdr">
+  <div class="top"><div class="gut"><div class="inner">
     <div class="hdrow">
       <a class="shop" href="#home"><span class="hlogo-wrap" id="hdLogo" aria-hidden="true"></span><span id="shopName">禾賀 <small>現貨零件</small></span></a>
       <a class="homebtn" id="homeBtn" href="#home" hidden data-i18n="home">⌂ 首頁</a>
       <button type="button" class="langbtn themebtn" id="themeBtn" aria-label="切換深淺色" data-i18n-aria="theme_label"><span class="sun" aria-hidden="true">☀</span><span class="moon" aria-hidden="true">☾</span></button>
       <button type="button" class="langbtn" id="langBtn" data-i18n="lang_btn" data-i18n-aria="lang_label" aria-label="Switch to English">EN</button>
     </div>
+  </div></div></div>
+  <div class="sbar" id="sbar"><div class="gut"><div class="inner">
     <form class="search" role="search" id="searchForm">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
       <input id="kw" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="品名、車種、料號" aria-label="搜尋品名、車種、料號" data-i18n-aria="kw_aria">
@@ -619,7 +627,7 @@ html.lock .fback{display:none}
       <input id="kwCar" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="車種" aria-label="車種" data-i18n-ph="kwf_car" data-i18n-aria="kwf_car">
       <input id="kwPn" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="料號" aria-label="料號" data-i18n-ph="kwf_pn" data-i18n-aria="kwf_pn">
     </div>
-  </div></div>
+  </div></div></div>
 </header>
 <div class="banner"><div class="gut"><div class="inner">
   <ol class="steps" aria-label="怎麼買"><li><span class="no">1.</span><span data-i18n="step1">按加入詢價單</span></li><li><span class="no">2.</span><span id="step3">分享至禾賀公司 LINE 聊天視窗詢價</span></li></ol>
@@ -1792,6 +1800,7 @@ function drawMain(h, back, force) {
   }
   view.innerHTML = html;
   mainHash = h;
+  setBars(false);
   document.getElementById('homeBtn').hidden = (h === 'home' || h === '');
   var y = back ? (scrolls.get(h) || 0) : 0;
   /* 回上一頁要回到原位：清單是分批印的，先把位置以前的批都接上再捲 */
@@ -1858,24 +1867,40 @@ function onDataFail() { if (PENDING) drawMain(mainHash, false, true); }
 var fback = document.getElementById('fback'), fbackObs = null;
 /* --top-h＝頂端列的實際底緣（業主 2026-10-26 晚：卡頂標題與頂端列之間不要有縫）：
    取 getBoundingClientRect().bottom（含安全區、sticky 位移、字放大），捲動／表頭變高時重量；CSS 再往上疊 1px 蓋掉半像素縫 */
-var topEl = document.querySelector('.top'), topHLast = -1;
-var topOffLast = -1;
+var topEl = document.querySelector('.top'), sbarEl = document.getElementById('sbar'), hdrEl = document.querySelector('.hdr');
+var topHLast = -1, hdHLast = -1, fbHLast = -1, barsHidden = false;
+function setVar(name, v, last) { if (Math.abs(v - last) > 0.01) document.documentElement.style.setProperty(name, v + 'px'); return v; }
 function setTopH() {
-  /* 先算搜尋列高度（--top-off），再量頂列底緣（--top-h）。
-     不能用 hdrow 的 offsetTop／getBoundingClientRect：它自己是 sticky，卡住時位置會變，量出來會一直跳（0.6↔104） */
-  var hd = topEl ? topEl.querySelector('.hdrow') : null, off = 0;
-  if (hd && topEl && window.innerWidth < 1100) {
-    var cs = getComputedStyle(hd.parentNode), pad = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
-    off = Math.max(0, topEl.offsetHeight - hd.offsetHeight - pad);
-  }
-  if (Math.abs(off - topOffLast) > 0.5) { topOffLast = off; document.documentElement.style.setProperty('--top-off', off + 'px'); }
-  var r = topEl ? topEl.getBoundingClientRect() : null, b = r ? Math.max(r.bottom, 0) : 0;
-  if (Math.abs(b - topHLast) > 0.01) { topHLast = b; document.documentElement.style.setProperty('--top-h', b + 'px'); }
-  return r ? r.height : 0;
+  var desktop = getComputedStyle(hdrEl).display !== 'contents';
+  hdHLast = setVar('--hd-h', desktop ? 0 : topEl.offsetHeight, hdHLast);
+  var b;
+  if (desktop) b = hdrEl.getBoundingClientRect().bottom;
+  else { b = topEl.getBoundingClientRect().bottom + (barsHidden ? 0 : sbarEl.offsetHeight); }   /* 用 offsetHeight：滑入滑出的動畫中 rect 會變，量出來才不會卡在半路 */
+  topHLast = setVar('--top-h', Math.max(b, 0), topHLast);
+  var fb = document.querySelector('.allbar');
+  fbHLast = setVar('--fb-h', fb && !barsHidden ? fb.offsetHeight : 0, fbHLast);
+  return b;
 }
-if (topEl && window.ResizeObserver) new ResizeObserver(function () { setTopH(); }).observe(topEl);
+function setBars(hide) {
+  if (barsHidden === hide) return;
+  barsHidden = hide;
+  document.body.classList.toggle('bars-hide', hide);
+  setTopH();
+}
+function kwFocused() { var a = document.activeElement; return a === kw || a === kwName || a === kwCar || a === kwPn; }
+if (window.ResizeObserver) { var tro = new ResizeObserver(function () { setTopH(); }); tro.observe(topEl); tro.observe(sbarEl); tro.observe(hdrEl); }
 window.addEventListener('resize', setTopH);
-window.addEventListener('scroll', function () { if (document.querySelector('.rel h2, .wall-bar, .lsort, .pseg')) setTopH(); }, { passive: true });
+/* 往下滑超過 30px 收起搜尋＋排序列、往上滑 30px 就回來；接近最上面、電腦版、正在打字時一律顯示 */
+var lastY = window.scrollY, dirAcc = 0;
+window.addEventListener('scroll', function () {
+  var y = window.scrollY, dy = y - lastY; lastY = y;
+  if (window.innerWidth >= 1100 || y < 40 || kwFocused()) { setBars(false); dirAcc = 0; }
+  else {
+    dirAcc = dy > 0 ? Math.max(0, dirAcc) + dy : Math.min(0, dirAcc) + dy;
+    if (dirAcc > 30) setBars(true); else if (dirAcc < -30) setBars(false);
+  }
+  if (document.querySelector('.rel h2, .wall-bar, .lsort, .pseg')) setTopH();
+}, { passive: true });
 function watchBack() {
   if (fbackObs) { fbackObs.disconnect(); fbackObs = null; }
   fback.classList.remove('show');
