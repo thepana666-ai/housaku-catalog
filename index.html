@@ -103,10 +103,8 @@ h1,h2{text-wrap:balance}
 .hdr{display:contents}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:31;background:var(--head);color:var(--head-ink)}
 .top .inner{padding-block:.45rem .3rem}
-.sbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px));z-index:30;background:var(--head);color:var(--head-ink);transition:transform .25s ease}
+.sbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hd-h,0px));z-index:30;background:var(--head);color:var(--head-ink);will-change:transform}
 .sbar .inner{padding-block:.1rem .6rem}
-.bars-hide .sbar{transform:translateY(-100%)}
-@media (prefers-reduced-motion:reduce){.sbar,.allbar{transition:none}}
 .shop{display:inline-flex;align-items:center;gap:.55rem;min-height:48px;max-width:100%;text-decoration:none;font-weight:700;font-size:1.12rem;letter-spacing:.06em;white-space:nowrap;justify-self:start}
 .shop small{font-size:1rem;font-weight:500;color:var(--head-muted);letter-spacing:.04em}
 #shopName{min-width:0;overflow:hidden;text-overflow:ellipsis}
@@ -152,7 +150,6 @@ h1,h2{text-wrap:balance}
     padding:.45rem max(16px,env(safe-area-inset-right,0px)) .6rem max(16px,env(safe-area-inset-left,0px));
     box-shadow:0 0 0 100vmax var(--head);clip-path:inset(0 -100vmax)}  /* 底色拉滿整個寬度，格子本身置中 1240 */
   .hdr>.top,.hdr>.sbar,.top>.gut,.sbar>.gut,.top .inner,.sbar .inner,.hdrow,.kwf{display:contents}
-  .bars-hide .sbar{transform:none}
   .shop{order:1;margin-right:.7rem}
   #kwName{order:2}#kwCar{order:3}#kwPn{order:4}
   .search{order:5}
@@ -354,8 +351,7 @@ html.lock .totop{display:none}
 
 /* ── 分類清單（廠牌／車種／品名） ── */
 .lsort{display:flex;align-items:center;gap:.45rem;margin:0 0 .5rem;padding:.35rem 0;position:sticky;top:calc(var(--top-h,0px) - 1px);z-index:5;background:var(--bg);box-shadow:0 -1px 0 var(--bg)}
-.allbar{flex-direction:column;align-items:stretch;gap:.35rem;transition:transform .25s ease}  /* 跟搜尋列一起：往下滑收起來、往上滑回來（業主 2026-11-01） */
-.bars-hide .allbar{transform:translateY(calc(-100% - var(--top-h,0px)))}
+.allbar{flex-direction:column;align-items:stretch;gap:.35rem;will-change:transform}  /* 跟搜尋列一起順著手指收／拉（業主 2026-11-01：不要撞到空氣牆才瞬間縮） */
 .allbar .arow{display:flex;align-items:center;gap:.45rem;overflow-x:auto;scrollbar-width:none;min-width:0}
 .allbar .arow::-webkit-scrollbar{display:none}
 .nlist{display:grid;border-top:2px solid var(--rule)}
@@ -1800,7 +1796,7 @@ function drawMain(h, back, force) {
   }
   view.innerHTML = html;
   mainHash = h;
-  setBars(false);
+  setBarOff(0);
   document.getElementById('homeBtn').hidden = (h === 'home' || h === '');
   var y = back ? (scrolls.get(h) || 0) : 0;
   /* 回上一頁要回到原位：清單是分批印的，先把位置以前的批都接上再捲 */
@@ -1868,38 +1864,42 @@ var fback = document.getElementById('fback'), fbackObs = null;
 /* --top-h＝頂端列的實際底緣（業主 2026-10-26 晚：卡頂標題與頂端列之間不要有縫）：
    取 getBoundingClientRect().bottom（含安全區、sticky 位移、字放大），捲動／表頭變高時重量；CSS 再往上疊 1px 蓋掉半像素縫 */
 var topEl = document.querySelector('.top'), sbarEl = document.getElementById('sbar'), hdrEl = document.querySelector('.hdr');
-var topHLast = -1, hdHLast = -1, fbHLast = -1, barsHidden = false;
+var topHLast = -1, hdHLast = -1, fbHLast = -1, barOff = 0;
 function setVar(name, v, last) { if (Math.abs(v - last) > 0.01) document.documentElement.style.setProperty(name, v + 'px'); return v; }
+/* 搜尋列＋排序類別列「順著手指」收／拉（業主 2026-11-01 第三版：不要滑到門檻才瞬間縮）：
+   barOff＝目前收進去的距離，往下滑多少就收多少、往上滑多少就拉回多少，最多收到兩列全部藏進 logo 列底下。
+   搜尋列先收（最多自己的高度），再來排序列；--top-h／--fb-h 跟著算，車種分段標題永遠貼在還看得見的那疊底下 */
 function setTopH() {
   var desktop = getComputedStyle(hdrEl).display !== 'contents';
   hdHLast = setVar('--hd-h', desktop ? 0 : topEl.offsetHeight, hdHLast);
-  var b;
-  if (desktop) b = hdrEl.getBoundingClientRect().bottom;
-  else { b = topEl.getBoundingClientRect().bottom + (barsHidden ? 0 : sbarEl.offsetHeight); }   /* 用 offsetHeight：滑入滑出的動畫中 rect 會變，量出來才不會卡在半路 */
+  var fb = document.querySelector('.allbar'), fbH = fb ? fb.offsetHeight : 0, b;
+  if (desktop) {
+    barOff = 0; sbarEl.style.transform = ''; if (fb) fb.style.transform = '';
+    b = hdrEl.getBoundingClientRect().bottom;
+    fbHLast = setVar('--fb-h', fbH, fbHLast);
+  } else {
+    var sbH = sbarEl.offsetHeight, off = Math.min(barOff, sbH + fbH), sOff = Math.min(off, sbH);
+    sbarEl.style.transform = sOff ? 'translateY(' + (-sOff) + 'px)' : '';
+    if (fb) fb.style.transform = off ? 'translateY(' + (-off) + 'px)' : '';
+    b = topEl.getBoundingClientRect().bottom + sbH - sOff;
+    fbHLast = setVar('--fb-h', fbH - Math.max(0, off - sbH), fbHLast);
+  }
   topHLast = setVar('--top-h', Math.max(b, 0), topHLast);
-  var fb = document.querySelector('.allbar');
-  fbHLast = setVar('--fb-h', fb && !barsHidden ? fb.offsetHeight : 0, fbHLast);
   return b;
 }
-function setBars(hide) {
-  if (barsHidden === hide) return;
-  barsHidden = hide;
-  document.body.classList.toggle('bars-hide', hide);
-  setTopH();
-}
+function setBarOff(v) { barOff = Math.max(0, v); setTopH(); }
 function kwFocused() { var a = document.activeElement; return a === kw || a === kwName || a === kwCar || a === kwPn; }
 if (window.ResizeObserver) { var tro = new ResizeObserver(function () { setTopH(); }); tro.observe(topEl); tro.observe(sbarEl); tro.observe(hdrEl); }
 window.addEventListener('resize', setTopH);
-/* 往下滑超過 30px 收起搜尋＋排序列、往上滑 30px 就回來；接近最上面、電腦版、正在打字時一律顯示 */
-var lastY = window.scrollY, dirAcc = 0;
+var lastY = window.scrollY;
 window.addEventListener('scroll', function () {
-  var y = window.scrollY, dy = y - lastY; lastY = y;
-  if (window.innerWidth >= 1100 || y < 40 || kwFocused()) { setBars(false); dirAcc = 0; }
+  var y = Math.max(0, window.scrollY), dy = y - lastY; lastY = y;
+  if (window.innerWidth >= 1100 || kwFocused()) barOff = 0;
   else {
-    dirAcc = dy > 0 ? Math.max(0, dirAcc) + dy : Math.min(0, dirAcc) + dy;
-    if (dirAcc > 30) setBars(true); else if (dirAcc < -30) setBars(false);
+    var fb = document.querySelector('.allbar');
+    barOff = Math.max(0, Math.min(barOff + dy, sbarEl.offsetHeight + (fb ? fb.offsetHeight : 0), y));   /* 不超過捲動距離：回到最上面一定全露出 */
   }
-  if (document.querySelector('.rel h2, .wall-bar, .lsort, .pseg')) setTopH();
+  setTopH();
 }, { passive: true });
 function watchBack() {
   if (fbackObs) { fbackObs.disconnect(); fbackObs = null; }
