@@ -794,7 +794,13 @@ var BRAND_EN = {
   '外匯': 'Japan used (dismantled)', '外匯新': 'Japan used, like new (~90%)', '中古': 'Used',
   '日本': 'Made in Japan', '日本 TBK': 'Japan TBK', '日本大同': 'Japan DAIDO',
   'TWN': 'Made in Taiwan', '台灣': 'Made in Taiwan', '正道': 'ZHENGDAO (Taiwan)', '飛鹿': 'FEILU (Taiwan)', '韓製': 'Made in Korea', '德製': 'Made in Germany', 'USA美': 'Made in USA', '英國KMP': 'UK KMP',
-  '進口': 'Imported', '歐洲': 'Europe', '整理': 'Reconditioned', '副廠': 'Aftermarket'
+  '進口': 'Imported', '歐洲': 'Europe', '整理': 'Reconditioned', '副廠': 'Aftermarket',
+  /* 2026-11-02 業主「不希望看到中文」⇒ 目錄裡其餘 27 個中文品牌字全部給英文：日系品牌照業界英文名（大豐 TAIHO／大同 DAIDO／日鍛 NITTAN／櫻花 SAKURA），
+     台灣廠牌業主沒說過英文名，用威妥瑪拼音大寫＋(Taiwan)（台和 TAI HO／國友 KUO YU／東國 TUNG KUO／合成 HO CHENG／日新 JIH HSIN／正興 CHENG HSING），業主給正確名就改這裡 */
+  '日本大豐': 'Japan TAIHO', '大同': 'DAIDO', '日本 NDC': 'Japan NDC', '日鍛': 'Japan NITTAN', '日本櫻花': 'Japan SAKURA', '日本 ART': 'Japan ART', '日本 FUJI': 'Japan FUJI',
+  '日本 Rocky': 'Japan ROCKY', '日本 SUDO': 'Japan SUDO', '日本 Sanwa': 'Japan SANWA', '日本 Stone': 'Japan STONE', '日本 AIKOH': 'Japan AIKOH', '日本 TGK': 'Japan TGK',
+  '台和': 'TAI HO (Taiwan)', '國友': 'KUO YU (Taiwan)', '東國': 'TUNG KUO (Taiwan)', '合成': 'HO CHENG (Taiwan)', 'HS和成': 'HS HO CHENG (Taiwan)', '和成': 'HO CHENG (Taiwan)',
+  '日新': 'JIH HSIN (Taiwan)', '正興': 'CHENG HSING (Taiwan)', '鑽石牌': 'DIAMOND brand', 'A級': 'Grade A', '訂製': 'Custom-made', '美孚': 'Mobil', '義大利': 'Made in Italy', '德製.': 'Made in Germany'
 };
 /* 品名英文（業主 2026-10-26 晚：「所有品名也要翻譯成英文」；2026-11-02：「更精確且全面」⇒ 公開站 880 種品名全部翻完，連包材／工資類也翻）：
    ERP 品名是中文，英文版對照這張表；表上沒有的照中文印。發布時 publish.mjs 會把目錄裡還沒翻的品名印在 log（「英文品名未翻」），看到就回來補。
@@ -982,6 +988,147 @@ function nameTxt(n) { if (!has(n)) return '—'; n = String(n).trim(); return LA
 /* 數量單位英文（2026-11-02 英文版截圖看到「2只」還是中文）：台＝一台引擎的份（set）、缸／穴＝每缸一份（cyl）、散裝的只／支／片／條＝pc；表上沒有的照原字 */
 var UNIT_EN = { '台': 'set', '組': 'set', '缸': 'cyl', '穴': 'cyl', '只': 'pc', '支': 'pc', '片': 'pc', '條': 'pc', '隻': 'pc', '個': 'pc', '目': 'pc', '包': 'pack', '張': 'sheet', '罐': 'can', '桶': 'drum', '捆': 'bundle', '尺': 'ft', '次': 'time' };
 function unitTxt(u) { if (!has(u)) return ''; u = String(u).trim(); return LANG === 'en' && own(UNIT_EN, u) ? UNIT_EN[u] : u; }
+/* 規格／年份／車種／共用車種欄的中文（ERP 自由文字，目錄裡 1,259 種寫法）：英文版逐詞對照 SPEC_EN（最長的詞先配，同一字串裡可以配好幾個詞），
+   目錄全部字串翻到沒有中文為止（2026-11-02 業主：「規格似乎沒有翻譯…原則上我不希望看到中文」）。沒配到的字照原字印，
+   發布時 publish.mjs 會點名「規格未翻」。行話：孔＝bore、缺＝notch、唇＝lip、期＝Stage、外匯＝Japan-import、新車／舊車＝new／old model、耐磨＝wear-resistant、外電＝chrome-plated。 */
+var SPEC_EN = {
+  '汽缸床CABON': 'head gasket carbon', '同通用008型': 'same as universal type 008', '汽缸床=TWN': 'head gasket = Taiwan', '中間孔不對稱': 'center hole asymmetric', '汽缸床=公司': 'head gasket = TW distributor', '汽缸床=日本': 'head gasket = Japan',
+  '汽缸床=正廠': 'head gasket = genuine', '附油封NOK': 'with NOK oil seal', '美國料-無毒': 'US material (non-toxic)', '風扇葉=塑膠': 'fan blade = plastic', '高週波熱處理': 'induction heat-treated', '無GK VS': 'no gasket, VS',
+  '熱處理半成品': 'heat-treated semi-finished', '機油自備表養': 'oil service (own oil)', '機油芯換紙芯': 'oil filter to paper element', '2010後': '2010 onward', '2013後': '2013 onward', '中間孔對稱': 'center hole symmetric',
+  '片形狀不同': 'pcs, different shapes', '四個螺絲孔': '4 bolt holes', '含機油芯座': 'with oil filter head', '附手壓邦浦': 'with hand primer pump', '附片+壓板': 'with disc + pressure plate', '帶手壓邦浦': 'with hand primer pump',
+  '無汽門油封': 'without valve stem seal', '節氣門清洗': 'throttle body cleaning', '銅包+RU': 'copper-clad + rubber', '熱處理成品': 'heat-treated finished', '變速箱鋁用': 'for aluminum gearbox', 'INP=鐵': 'INP = steel',
+  '1.2檔': '1st-2nd gear', '1片3組': '1 pc, 3 sets', '2-3速': '2nd-3rd speed', '2-3檔': '2nd-3rd gear', '3-4檔': '3rd-4th gear', '300立': '300 cc',
+  '4-5速': '4th-5th speed', '4-5檔': '4th-5th gear', '4.5速': '4th-5th speed', '4&5期': 'Stage 4 & 5', '5-6檔': '5th-6th gear', '5&R檔': '5th & R gear',
+  '5期卡車': 'Stage 5 truck', '二硫化鉬': 'MoS2', '入彎出直': 'inlet bent, outlet straight', '入彎出彎': 'inlet bent, outlet bent', '上蓋有孔': 'top cover with hole', '上蓋無孔': 'top cover without hole',
+  '中間菱形': 'center diamond', '中間圓孔': 'center round hole', '手壓邦浦': 'hand primer pump', '出水管座': 'water outlet seat', '四角螺帽': 'square nut', '外匯引擎': 'Japan-import engine',
+  '外匯車種': 'Japan-import model', '石棉包鐵': 'steel-clad asbestos', '有2小孔': 'with 2 small holes', '有卡簧溝': 'with circlip groove', '有油嘴缺': 'with jet notch', '有感應孔': 'with sensor hole',
+  '有廢氣孔': 'with EGR hole', '形狀不同': 'different shapes', '改良三型': 'improved type 3', '改良四孔': 'improved 4-hole', '汽缸蓋旁': 'beside cylinder head', '附四向閥': 'with 4-way valve',
+  '附皮帶盤': 'with pulley', '附時規蓋': 'with timing cover', '附感應器': 'with sensor', '附輔助缸': 'with range cylinder', '附離合器': 'with clutch', '厚防爆牆': 'thick fire ring',
+  '缸間水孔': 'inter-cylinder water hole', '偏心5穴': '5-journal camshaft', '副軸6速': 'countershaft 6-speed', '球瓶形狀': 'bottle-shaped', '無汽缸床': 'without head gasket', '無油封位': 'no seal seat',
+  '無油嘴缺': 'no jet notch', '無感應孔': 'no sensor hole', '無螺絲孔': 'no bolt hole', '鋁變速箱': 'aluminum gearbox', '橡皮包鐵': 'steel-clad rubber', '橡膠包鐵': 'steel-clad rubber',
+  '薄防爆牆': 'thin fire ring', '鐵包石棉': 'steel-clad asbestos', '鐵包RU': 'steel-clad rubber', 'L雙接頭': 'L double fitting', '10孔': '10-hole', '10層': '10-layer',
+  '11孔': '11-hole', '12孔': '12-hole', '12片': '12 pcs', '13孔': '13-hole', '13件': '13 pcs', '14孔': '14-hole',
+  '15孔': '15-hole', '16孔': '16-hole', '16件': '16 pcs', '16速': '16-speed', '17孔': '17-hole', '18孔': '18-hole',
+  '20孔': '20-hole', '22孔': '22-hole', '23孔': '23-hole', '24孔': '24-hole', '25孔': '25-hole', '26孔': '26-hole',
+  '31孔': '31-hole', '32孔': '32-hole', '33孔': '33-hole', '34孔': '34-hole', '35孔': '35-hole', '3合1': '3-in-1',
+  '3期車': 'Stage 3 truck', '4期車': 'Stage 4 truck', '51孔': '51-bore', '52孔': '52-bore', '5期車': 'Stage 5 truck', '94年': '\'94',
+  '二期車': 'Stage 2 truck', '二管平': '2-pipe flat', '三角形': 'triangular', '三期車': 'Stage 3 truck', '大三角': 'large triangle', '大齒輪': 'large gear',
+  '大罐裝': 'large can', '小三角': 'small triangle', '小圓孔': 'small round hole', '不規則': 'irregular', '不對稱': 'asymmetric', '中一槓': '1 center bar',
+  '中二槓': '2 center bars', '中擔前': 'center bearing front', '中擔後': 'center bearing rear', '五角形': 'pentagon', '五角型': 'pentagon', '內圓型': 'inner round type',
+  '內齒厚': 'internal teeth T', '六角形': 'hexagonal', '六角型': 'hexagonal', '太陽牌': 'SUN brand', '手自排': 'semi-automatic', '水泥車': 'mixer truck',
+  '牙膏式': 'tube type', '加力箱': 'transfer case', '加水管': 'filler pipe', '加鋼索': 'with steel cable', '包金屬': 'metal-clad', '半成品': 'semi-finished',
+  '四角孔': 'square hole', '四角形': 'square', '四角溝': 'square groove', '外匯車': 'Japan-import truck', '本壘板': 'home-plate shape', '正3角': 'equilateral triangle',
+  '正方形': 'square', '正版型': 'original type', '石棉條': 'asbestos rope', '石綿條': 'asbestos rope', '交叉唇': 'cross lip', '全合成': 'fully synthetic',
+  '吊車用': 'for crane', '多層鐵': 'multi-layer steel', '有油孔': 'with oil hole', '耳機型': 'headphone-shaped', '冷凍車': 'reefer truck', '含螺帽': 'with nut',
+  '改良形': 'improved type', '汽缸床': 'head gasket', '沒油孔': 'no oil hole', '防爆牆': 'fire ring', '咖啡色': 'brown', '怪手用': 'for excavator',
+  '油管彎': 'bent oil pipe', '油壓式': 'hydraulic', '波浪型': 'wavy', '長方形': 'rectangular', '附心子': 'with core', '附邦浦': 'with pump',
+  '附油封': 'with oil seal', '附油條': 'with side seal', '附油壺': 'with reservoir', '附波司': 'with bearing', '附芯子': 'with element', '附風扇': 'with fan',
+  '附氣門': 'with valve', '附浮筒': 'with float', '附軸心': 'with shaft', '附軸承': 'with bearing', '附銅網': 'with screen', '附橡皮': 'with rubber',
+  '附螺帽': 'with nut', '附鐵片': 'with steel plate', '附鐵框': 'with retainer', '附鐵管': 'with steel pipe', '歪3角': 'skewed triangle', '砂石車': 'dump truck',
+  '美國料': 'US material', '重機用': 'for heavy equipment', '香菇頭': 'mushroom head', '修理包': 'repair kit', '倒車檔': 'reverse gear', '旁通閥': 'bypass valve',
+  '時規蓋': 'timing cover', '消防車': 'fire truck', '砲管型': 'barrel type', '粉紅色': 'pink', '迴油管': 'return pipe', '高分子': 'polymer',
+  '高低擋': 'hi/lo range', '高低檔': 'hi/lo range', '高週波': 'induction-hardened', '堆土機': 'bulldozer', '堆高機': 'forklift', '帶油溝': 'with oil groove',
+  '常閉型': 'normally closed', '斜4孔': 'beveled 4-hole', '斜4角': 'beveled square', '連接感': 'connector sensor', '單頭牙': 'single-end thread', '帽子形': 'cap-shaped',
+  '換工資': 'labor', '無內棉': 'no inner cotton', '無天窗': 'no window', '無邦浦': 'without pump', '無油孔': 'no oil hole', '無直噴': 'indirect injection',
+  '無耐磨': 'plain', '無循環': 'no recirculation', '無渦輪': 'non-turbo', '無RU': 'no rubber', '發電機': 'alternator', '進汽管': 'intake pipe',
+  '黑鐵絲': 'black wire', '圓桶形': 'cylindrical', '碗公型': 'bowl-shaped', '腳座高': 'base H', '電磁閥': 'solenoid valve', '墮圓形': 'oval',
+  '廢氣孔': 'EGR hole', '熱處理': 'heat-treated', '蝴蝶形': 'butterfly-shaped', '齒輪式': 'gear type', '齒輪高': 'gear H', '整台份': 'full engine set',
+  '機油環': 'oil ring', '機械用': 'for machinery', '鴨舌帽': 'duckbill cap', '螺絲孔': 'bolt hole', '避震器': 'shock absorber', '韓國車': 'Korean',
+  '鎖螺帽': 'nut-lock', '鎖螺絲': 'bolt-lock', '雙彈簧': 'double spring', '雙頭牙': 'stud', '鐵包鐵': 'steel/steel', '驅動殼': 'drive housing',
+  'O型環': 'O-ring', '1缺': '1 notch', '1速': '1-speed', '2孔': '2-hole', '2片': '2 pcs', '2缺': '2 notches',
+  '2速': '2-speed', '2期': 'Stage 2', '2葉': '2-blade', '2檔': '2nd gear', '3孔': '3-hole', '3缺': '3 notches',
+  '3速': '3-speed', '3插': '3-pin plug', '3期': 'Stage 3', '3溝': '3-groove', '3層': '3-layer', '3檔': '3rd gear',
+  '4分': '1/2"', '4孔': '4-hole', '4片': '4 pcs', '4缸': '4-cylinder', '4缺': '4 notches', '4條': '4 strips',
+  '4期': 'Stage 4', '4層': '4-layer', '4檔': '4th gear', '5分': '5/8"', '5孔': '5-hole', '5目': '5-mesh',
+  '5速': '5-speed', '5期': 'Stage 5', '5溝': '5-groove', '5層': '5-layer', '5檔': '5th gear', '6分': '3/4"',
+  '6孔': '6-hole', '6缸': '6-cylinder', '6速': '6-speed', '6期': 'Stage 6', '6層': '6-layer', '6檔': '6th gear',
+  '7孔': '7-hole', '7片': '7 pcs', '7層': '7-layer', '8孔': '8-hole', '8層': '8-layer', '9孔': '9-hole',
+  '9速': '9-speed', '一溝': 'single groove', '二孔': '2-hole', '二期': 'Stage 2', '二溝': '2-groove', '二葉': '2-blade',
+  '八角': 'octagon', '三孔': '3-hole', '三角': 'triangle', '三條': '3 strips', '三通': 'tee', '三插': '3-pin plug',
+  '三期': 'Stage 3', '三菱': 'Mitsubishi', '三溝': '3-groove', '三腳': '3-pin', '三葉': '3-blade', '下座': 'lower seat',
+  '下層': 'lower layer', '大孔': 'large bore', '大芯': 'large core', '大花': 'large pattern', '大面': 'large face', '大斜': 'large bevel',
+  '大陸': 'China', '小孔': 'small bore', '小松': 'Komatsu', '小芯': 'small core', '小花': 'small pattern', '小厚': 'small thick',
+  '小斜': 'small bevel', '小薄': 'small thin', '中巴': 'minibus', '中古': 'used', '中板': 'middle plate', '中花': 'medium pattern',
+  '中間': 'center', '五孔': '5-hole', '五角': 'pentagon', '五條': '5 strips', '五期': 'Stage 5', '內牙': 'internal thread',
+  '內外': 'inner & outer', '內套': 'inner sleeve', '內徑': 'ID', '內棉': 'inner cotton', '內齒': 'internal teeth', '公管': 'male pipe',
+  '六孔': '6-hole', '六角': 'hexagon', '六腳': '6-pin', '天窗': 'window', '巴士': 'bus', '手排': 'manual',
+  '方形': 'square', '日本': 'Japan', '止鍵': 'key', '水泥': 'mixer', '水塞': 'core plug', '主桶': 'main tank',
+  '凸心': 'raised center', '凸字': 'raised letter', '凸唇': 'raised lip', '加大': 'oversize', '加長': 'extended', '加厚': 'thickened',
+  '包鐵': 'steel-clad', '半成': 'semi-finished', '半圓': 'half-round', '卡簧': 'circlip', '四孔': '4-hole', '四片': '4 pcs',
+  '四角': 'square', '四條': '4 strips', '四期': 'Stage 4', '四溝': '4-groove', '四腳': '4-pin', '四管': '4-pipe',
+  '四層': '4-layer', '外套': 'outer sleeve', '外徑': 'OD', '外殼': 'housing', '外匯': 'Japan-import', '外電': 'chrome-plated',
+  '平底': 'flat bottom', '平面': 'face', '打洞': 'punched', '正面': 'front face', '正溝': 'straight groove', '母管': 'female pipe',
+  '白色': 'white', '白盒': 'white box', '白鐵': 'stainless', '石棉': 'asbestos', '石綿': 'asbestos', '石墨': 'graphite',
+  '共軌': 'common rail', '吊車': 'crane', '成品': 'finished', '托頭': 'tractor', '扣環': 'clip', '有孔': 'with hole',
+  '有角': 'angled', '有唇': 'with lip', '有缺': 'notched', '有帽': 'with cap', '有溝': 'grooved', '灰色': 'grey',
+  '自排': 'automatic', '伺服': 'servo', '冷卻': 'cooling', '改寬': 'widened', '車用': 'for truck', '車溝': 'grooved',
+  '車道': 'truck', '車輛': 'truck', '其他': 'Other', '咖啡': 'brown', '固定': 'fixed', '怪手': 'excavator',
+  '拖車': 'trailer', '油缺': 'oil notch', '油管': 'oil pipe', '油壓': 'hydraulic', '波司': 'bearing', '直角': 'right angle',
+  '直管': 'straight pipe', '直噴': 'direct injection', '空心': 'hollow', '附座': 'with seat', '附桿': 'with rod', '附管': 'with pipe',
+  '附盤': 'with plate', '附鎖': 'with lock', '前右': 'front right', '前左': 'front left', '前輪': 'front wheel', '後右': 'rear right',
+  '後左': 'rear left', '後輪': 'rear wheel', '怠速': 'idle', '扁管': 'flat pipe', '活門': 'valve', '紅色': 'red',
+  '紅盒': 'red box', '耐磨': 'wear-resistant', '背面': 'back face', '訂製': 'custom-made', '重机': 'heavy equipment', '重機': 'heavy equipment',
+  '倒牙': 'reverse thread', '倒拉': 'pull-type', '套片': 'shim', '套筒': 'sleeve', '校正': 'calibrated', '消音': 'silenced',
+  '消腰': 'waist-relieved', '缺角': 'notched', '迴油': 'return', '隻腳': 'pins', '副桶': 'sub tank', '副軸': 'countershaft',
+  '帶盤': 'with plate', '帶線': 'with wire', '排氣': 'exhaust', '接頭': 'fitting', '斜角': 'beveled', '桶裝': 'drum',
+  '梅花': 'serrated', '船用': 'marine', '軟木': 'cork', '通用': 'universal', '最小': 'smallest', '單芯': 'single core',
+  '單缸': 'single-cylinder', '單排': 'single row', '單斜': 'single bevel', '單溝': 'single groove', '帽形': 'cap-shaped', '插式': 'plug-in',
+  '散裝': 'loose', '無孔': 'no hole', '無毒': 'non-toxic', '無唇': 'no lip', '無缺': 'no notch', '無帽': 'no cap',
+  '無棉': 'no cotton', '無溝': 'no groove', '無噴': 'no oil jet', '無齒': 'no teeth', '菱形': 'diamond-shaped', '軸承': 'bearing',
+  '進氣': 'intake', '黃色': 'yellow', '黑色': 'black', '黑棉': 'black cotton', '黑頭': 'black head', '圓孔': 'round bore',
+  '圓凸': 'round raised', '圓形': 'round', '圓溝': 'round groove', '圓管': 'round pipe', '塑膠': 'plastic', '新車': 'new model',
+  '腳座': 'base', '隔片': 'spacer', '電子': 'electronic', '電動': 'electric', '電梯': 'elevator', '電銅': 'electrolytic copper',
+  '電鍍': 'plated', '墊片': 'gasket', '對稱': 'symmetric', '綠色': 'green', '銀色': 'silver', '銅包': 'copper-clad',
+  '銅網': 'screen', '增壓': 'boost', '墮圓': 'oval', '寬版': 'wide version', '箱車': 'van truck', '蝶式': 'butterfly type',
+  '調整': 'adjust', '鋁用': 'for aluminum', '鋁管': 'aluminum pipe', '鋁頭': 'aluminum head', '齒輪': 'gear', '橘色': 'orange',
+  '橡皮': 'rubber', '橡膠': 'rubber', '螢光': 'fluorescent', '總成': 'assy', '總長': 'total L', '薄片': 'thin plate',
+  '薄唇': 'thin lip', '螺帽': 'nut', '螺絲': 'bolt', '舊車': 'old model', '藍色': 'blue', '雙芯': 'double core',
+  '雙缸': 'twin-cylinder', '雙面': 'double-sided', '雙排': 'double row', '雙斜': 'double bevel', '雙圓': 'double round', '雙溝': 'double groove',
+  '雙管': 'twin pipe', '雙層': 'double layer', '雙線': '2-wire', '雙環': 'double ring', '鐵片': 'steel plate', '鐵用': 'for steel',
+  '鐵皮': 'sheet metal', '鐵框': 'steel retainer', '鐵殼': 'steel case', '鐵絲': 'wire', '鐵管': 'steel pipe', '鐵網': 'mesh',
+  '鐵製': 'steel', '彎管': 'elbow', '襯套': 'bushing', '鑄鐵': 'cast iron', '罐裝': 'can', '鑽石': 'diamond',
+  'ㄇ型': 'U-channel', 'L型': 'L-type', 'S型': 'S-type', 'Z字': 'Z-shape', '入': 'inlet', '上': 'upper',
+  '下': 'lower', '大': 'large', '小': 'small', '中': 'medium', '內': 'inner', '孔': 'bore',
+  '心': 'ID', '方': 'square', '片': 'pc', '凸': 'raised', '凹': 'recessed', '出': 'outlet',
+  '右': 'right', '外': 'outer', '左': 'left', '平': 'flat', '正': 'regular', '白': 'white',
+  '目': 'mesh', '穴': 'bore', '立': 'cc', '件': 'pcs', '年': 'yr', '有': 'with',
+  '位': 'seat', '低': 'low', '含': 'with', '夾': 'clamp', '束': 'clamp', '肖': 'pin',
+  '車': 'truck', '兩': '2', '刻': 'marked', '直': 'straight', '芯': 'core', '花': 'pattern',
+  '長': 'long', '附': 'with', '前': 'front', '厚': 'thick', '型': 'type', '度': '°',
+  '後': 'rear', '扁': 'flat', '紅': 'red', '缸': 'cyl', '面': 'face', '唇': 'lip',
+  '座': 'seat', '缺': 'notch', '高': 'H', '帶': 'with', '斜': 'bevel', '條': 'strip',
+  '深': 'depth', '淺': 'shallow', '粗': 'coarse', '細': 'fine', '組': 'set', '速': '-speed',
+  '單': 'single', '帽': 'cap', '插': 'plug', '期': 'Stage', '無': 'no', '牌': 'brand',
+  '短': 'short', '菇': 'mushroom', '軸': 'shaft', '黑': 'black', '圓': 'round', '溝': 'groove',
+  '腳': 'pin', '葉': 'blade', '號': 'No.', '槓': 'bar', '管': 'pipe', '綠': 'green',
+  '銅': 'copper', '寬': 'W', '層': 'layer', '熱': 'heat-treated', '盤': 'plate', '鋁': 'aluminum',
+  '齒': 'T', '燈': 'lamp', '鋼': 'steel', '檔': 'gear', '薄': 'thin', '點': 'point',
+  '藍': 'blue', '雙': 'double', '邊': 'side', '鐵': 'steel', '彎': 'bent', '鑽': 'drilled'
+};
+var SPEC_IDX = null, CJK_RE = /[\u3400-\u9fff\u3100-\u312f]/;
+function zhTxtEn(s) {
+  if (!has(s)) return ''; s = String(s);
+  if (!CJK_RE.test(s)) return s;
+  if (!SPEC_IDX) {
+    SPEC_IDX = {};
+    Object.keys(SPEC_EN).forEach(function (k) { var f = k.charAt(0); (SPEC_IDX[f] = SPEC_IDX[f] || []).push(k); });
+    Object.keys(SPEC_IDX).forEach(function (f) { SPEC_IDX[f].sort(function (a, b) { return b.length - a.length; }); });
+  }
+  var out = '', i = 0, n = s.length;
+  while (i < n) {
+    var cands = SPEC_IDX[s.charAt(i)], hit = null;
+    if (cands) for (var k = 0; k < cands.length; k++) if (s.substr(i, cands[k].length) === cands[k]) { hit = cands[k]; break; }
+    if (hit) {
+      var t = SPEC_EN[hit];
+      if (out && !/\s$/.test(out) && /[A-Za-z0-9\u00b0"%)]$|[\u3400-\u9fff]$/.test(out) && /^[A-Za-z0-9(]/.test(t)) out += ' ';
+      out += t; i += hit.length;
+      if (i < n && /[A-Za-z0-9(]/.test(s.charAt(i)) && !/[-\s]$/.test(out)) out += ' ';
+    } else { out += s.charAt(i); i++; }
+  }
+  return out.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+}
+/* 只有英文版才翻；中文版原字照印 */
+function zhTxt(s) { return LANG === 'en' ? zhTxtEn(s) : s; }
 function nmv(n) { return has(n) ? esc(nameTxt(n)) : DASH; }
 var BRAND_EN_N = null;
 function brandShow(bc) {
@@ -989,7 +1136,7 @@ function brandShow(bc) {
   if (LANG !== 'en') return bc;
   if (!BRAND_EN_N) { BRAND_EN_N = new Map(); Object.keys(BRAND_EN).forEach(function (k) { BRAND_EN_N.set(String(k).normalize('NFKC').trim().toUpperCase(), BRAND_EN[k]); }); }
   var k = bc.normalize('NFKC').trim().toUpperCase();
-  return BRAND_EN_N.has(k) ? BRAND_EN_N.get(k) : bc;
+  return BRAND_EN_N.has(k) ? BRAND_EN_N.get(k) : zhTxtEn(bc); /* 表上沒有的（例如新出現的「日本 XX」）至少把中文字翻掉 */
 }
 var STORE_KEY = 'hohe-clearance-inquiry-v1';
 var OTHER = '其他';
@@ -999,7 +1146,7 @@ function cmp(a, b) { return collator.compare(a || '', b || ''); }
 function has(v) { return v !== null && v !== undefined && String(v).trim() !== ''; }
 function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 var DASH = '<span class="dash">—</span>';
-function val(v) { return has(v) ? esc(v) : DASH; }
+function val(v) { return has(v) ? esc(zhTxt(v)) : DASH; }
 function txt(v) { return has(v) ? String(v) : '—'; }
 function str(v) { return typeof v === 'string' ? v.trim() : (typeof v === 'number' && isFinite(v) ? String(v) : ''); }
 function own(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
@@ -1183,7 +1330,9 @@ function initData(items) {
     x._f = [x.name, x.car_code, x.series, x.spec, x.brand, x.year, x.part_no_key, x.code].map(norm);
     x._fits = (Array.isArray(x.fits) ? x.fits : []).map(norm).filter(Boolean);
     x._pk = pnKey(x.part_no); x._sk = pnKey(x.spec);
-    x._en = norm(own(NAME_EN, String(x.name || '').trim()) ? NAME_EN[String(x.name).trim()] : '');
+    /* 英文搜尋也要找得到：品名英文＋規格／年份／車種翻成英文的字（zhTxtEn 不看 LANG，切換語言不用重建） */
+    x._nen = norm(own(NAME_EN, String(x.name || '').trim()) ? NAME_EN[String(x.name).trim()] : '');
+    x._en = [x._nen, zhTxtEn(x.spec), zhTxtEn(x.year), zhTxtEn(x.car_code)].map(norm).filter(Boolean).join('|');
     x._hay = x._f.concat(aliasOf(x.series).map(norm), [norm(brandClass(x.brand)), x._en], x._fits).join('|');
   });
   READY = true;
@@ -1336,7 +1485,7 @@ function kwFields() {
 }
 function fieldsOn(f) { return !!(f.name || f.car || f.pn); }
 function fieldPass(x, f) {
-  if (f.name && !variants(f.name).some(function (v) { return x._f[0].indexOf(v) >= 0 || (x._en && x._en.indexOf(v) >= 0); })) return false;
+  if (f.name && !variants(f.name).some(function (v) { return x._f[0].indexOf(v) >= 0 || (x._nen && x._nen.indexOf(v) >= 0); })) return false;
   if (f.car && !(x._f[1].indexOf(f.car) === 0 || x._fits.some(function (c) { return c.indexOf(f.car) === 0; }))) return false;
   if (f.pn && x._pk.indexOf(f.pn) < 0 && x._sk.indexOf(f.pn) < 0) return false;
   return true;
@@ -1435,7 +1584,7 @@ function thumb(x, head) {
     (f ? '<img src="photos/t/' + esc(f) + '" alt="" loading="lazy" decoding="async" width="96" height="96">' : '<span class="noimg" title="' + T('no_photo_t') + '">' + LOGO_SVG + '</span>') + CK0.replace('{t}', T('in_inq')) + '</span>';
 }
 /* 規格欄＝規格＋年份（第五個標籤，小字；業主 2026-10-26 5A 年份對外） */
-function specYear(x) { return (has(x.spec) ? esc(x.spec) : (has(x.year) ? '' : DASH)) + (has(x.year) ? '<span class="yr">' + esc(x.year) + '</span>' : ''); }
+function specYear(x) { return (has(x.spec) ? esc(zhTxt(x.spec)) : (has(x.year) ? '' : DASH)) + (has(x.year) ? '<span class="yr">' + esc(zhTxt(x.year)) + '</span>' : ''); }
 /* 長串沒空白的規格（像料號）准許在自己欄內折行，其他規格不拆字 */
 function specBrk(v) { return has(v) && String(v).length >= 8 && !/\s/.test(String(v)) ? ' brk' : ''; }
 function HEADT() { return { name: T('col_name'), car: T('col_car'), spec: T('col_spec'), brand: T('col_brand'), qty: T('col_qty') }; }
@@ -1468,7 +1617,7 @@ function plist(items, opt) {
   var h = '<div class="plist' + (mode === 'all' ? '' : ' ' + mode) + (withCar ? '' : ' nocar') + (withSpec ? '' : ' nospec') + '" role="table">' +
     '<div class="prow phead" role="row">' + cells(null, true) + '</div>';
   function ent(e) {
-    if (e.seg) return '<div class="pseg" role="row"><span role="cell" aria-colspan="6"><span class="k">' + (e.seg.code ? esc(e.seg.code) : '—') + '</span><span class="n"><b>' + e.seg.items.length + '</b>' + T('u_item_after') + '</span></span></div>';
+    if (e.seg) return '<div class="pseg" role="row"><span role="cell" aria-colspan="6"><span class="k">' + (e.seg.code ? esc(zhTxt(e.seg.code)) : '—') + '</span><span class="n"><b>' + e.seg.items.length + '</b>' + T('u_item_after') + '</span></span></div>';
     return '<a class="prow" role="row" href="#p-' + esc(e.id) + '">' + cells(e, false) + '</a>';
   }
   /* 分批印（業主 2026-11-01：全部商品 3,172 項一次印會卡）：先印 LAZY_N 列，剩下的捲到底前自動接上（watchLazy）。
@@ -1798,7 +1947,7 @@ function vNames() {
   lsorted(NAMES, 'n', function (x) { return nameTxt(x.name); }).forEach(function (ni) {
     var n = NAMES[ni];
     h += '<a class="nrow" href="#n-' + ni + '"><span class="k">' + (esc(nameTxt(n.name))) + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
-      uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(esc).join(' · ') + '</span></a>';
+      uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(function (c) { return esc(zhTxt(c)); }).join(' · ') + '</span></a>';
   });
   return h + '</div>';
 }
@@ -1841,7 +1990,7 @@ function vKindNames(ki) {
   var h = lhead([{ t: T('by_kind'), href: '#k' }, { t: kindName(k.label) }], k.names.length, 'u_name') + '<div class="nlist two">';
   k.names.forEach(function (n, ni) {
     h += '<a class="nrow" href="#k-' + ki + '-' + ni + '"><span class="k">' + (esc(nameTxt(n.name))) + '</span><span class="c"><b>' + n.items.length + '</b>' + T('u_item_after') + '</span><span class="p code">' +
-      uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(esc).join(' · ') + '</span></a>';
+      uniq(sorted(n.items).map(function (x) { return x.car_code; })).map(function (c) { return esc(zhTxt(c)); }).join(' · ') + '</span></a>';
   });
   return h + '</div>';
 }
@@ -1898,7 +2047,7 @@ function vProduct(x) {
       '<dt>' + T('f_make') + '</dt><dd>' + seriesLabel(s.name) + '</dd>' +
       '<dt>' + T('f_spec') + '</dt><dd>' + val(x.spec) + '</dd>' +
       '<dt>' + T('f_brand') + '</dt><dd>' + brandCell(x) + '</dd>' +
-      (has(x.year) ? '<dt>' + T('f_year') + '</dt><dd>' + esc(x.year) + '</dd>' : '') +
+      (has(x.year) ? '<dt>' + T('f_year') + '</dt><dd>' + esc(zhTxt(x.year)) + '</dd>' : '') +
       '<dt>' + T('f_pn') + '</dt><dd class="code">' + val(x.part_no) + '</dd>' +
       '<dt>' + T('f_kind') + '</dt><dd>' + kindName(kindOf(x)) + '</dd>' +
       fitsRow(x) + convRow(x) +
@@ -1913,7 +2062,7 @@ function fitsRow(x) {
   if (!fits.length) return '';
   return '<dt>' + T('f_fits') + '</dt><dd class="fits">' + fits.map(function (c) {
     var at = CAR_AT.get(c);
-    return at ? '<a href="#c-' + at.si + '-' + at.ci + '">' + esc(c) + '</a>' : '<span>' + esc(c) + '</span>';
+    return at ? '<a href="#c-' + at.si + '-' + at.ci + '">' + esc(zhTxt(c)) + '</a>' : '<span>' + esc(zhTxt(c)) + '</span>';
   }).join('') + '</dd>';
 }
 function vMissing() {
@@ -2215,7 +2364,7 @@ function sugItems(el) {
       if (!x._pk) return;
       var i = x._pk.indexOf(qp); if (i < 0) return;
       var key = x.part_no, e = seen.get(key);
-      if (!e) { e = { v: x.part_no, label: x.part_no, n: 0, r: x._pk === qp ? 0 : i === 0 ? 1 : 2, sub: nameTxt(x.name), car: has(x.car_code) ? x.car_code : '', code: true }; seen.set(key, e); out.push(e); }
+      if (!e) { e = { v: x.part_no, label: x.part_no, n: 0, r: x._pk === qp ? 0 : i === 0 ? 1 : 2, sub: nameTxt(x.name), car: has(x.car_code) ? zhTxt(x.car_code) : '', code: true }; seen.set(key, e); out.push(e); }
       e.n++;
     });
     out.sort(function (a, b) { return (a.r - b.r) || cmp(a.label, b.label); });
@@ -2364,7 +2513,7 @@ function undoRow() {
   if (!UNDO) return '';
   var t;
   if (UNDO.all) t = T('cleared_n', { n: UNDO.all.length });
-  else { var x = byId.get(UNDO.e.id); t = T('removed_x', { x: nmv(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(x.car_code) + '</span>' : '') }); }
+  else { var x = byId.get(UNDO.e.id); t = T('removed_x', { x: nmv(x.name) + (has(x.car_code) ? ' <span class="code">' + esc(zhTxt(x.car_code)) + '</span>' : '') }); }
   return '<div class="qundo" role="row"><span class="t" role="cell">' + t + '</span>' +
     '<button type="button" class="btn small line" data-undo="1">' + T('undo') + '</button></div>';
 }
