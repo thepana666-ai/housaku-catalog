@@ -318,6 +318,7 @@ html.lock .totop{display:none}
 .store-top .contact{margin-top:.3rem}
 .store p{margin:0 0 .25rem;font-size:1.02rem;overflow-wrap:anywhere}
 .store .st-a{font-weight:700;font-size:1.1rem}
+.store .st-links a{color:var(--brass);font-weight:600;text-decoration:none}.store .st-links a:hover{text-decoration:underline}
 .store .sel{user-select:text;-webkit-user-select:text}
 .contact{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.15rem 1.2rem;margin:1.4rem 0 0;padding-top:.9rem;border-top:2px solid var(--rule);font-size:.95rem}
 .store+.contact{margin-top:.8rem;padding-top:.6rem;border-top-width:1px;border-top-color:var(--line)}
@@ -717,6 +718,7 @@ if (!SITE || typeof SITE !== 'object' || Array.isArray(SITE)) SITE = {};
    商品本身的資料（品名、車種、規格、品牌原字）照 ERP 原字不翻；翻的是介面的字、類別、品牌歸類、廠牌中文別名（英文版不顯示）。 */
 var I18N = {
   zh: {
+    hub_trade: '同業調貨專區', hub_e: '引擎型號索引', hub_n: '品名索引', hub_m: '廠牌索引', bulk_added: '已整批加入 {n} 件（共 {m} 件）',
     site_sub: '現貨零件', company: '禾賀企業有限公司', home: '⌂ 首頁', lang_btn: 'EN', lang_label: 'Switch to English',
     step1: '按加入詢價單', step2_line: '分享至禾賀公司 LINE 聊天視窗詢價', step2_tel: '打電話或傳訊息給我們詢價', step2_msg: '傳訊息給我們詢價',
     ph_long: '模糊搜尋：品名、車種、料號', ph_short: '模糊搜尋', ph_tiny: '模糊', kw_aria: '模糊搜尋品名、車種、料號', kw_clear: '清除',
@@ -745,6 +747,7 @@ var I18N = {
     other: '其他', crumbs_aria: '目前位置', sep: '、', korean: '韓國車', lb_aria: '照片放大', lb_hint: '點兩下放大・兩指可縮放・手機橫拿看更大'
   },
   en: {
+    hub_trade: 'Trade & wholesale', hub_e: 'Engine index', hub_n: 'Part name index', hub_m: 'Make index', bulk_added: 'Added {n} items ({m} total)',
     site_sub: 'In-Stock Parts', company: 'Housaku Enterprise Co., Ltd.', home: '⌂ Home', lang_btn: '中文', lang_label: '切換成中文',
     step1: 'Tap "Add to inquiry"', step2_line: 'Share it to Housaku\'s LINE chat for a quote', step2_tel: 'Call or message us for a quote', step2_msg: 'Message us for a quote',
     ph_long: 'Search anything: part, model, part no.', ph_short: 'Search anything', ph_tiny: 'Search', kw_aria: 'Search part name, model or part number', kw_clear: 'Clear',
@@ -1739,7 +1742,22 @@ function storeInfo() {
   h += '<p class="st-a"><b>' + T('company') + '</b></p>';
   if (HOURS) h += '<p>' + T('hours') + esc(HOURS) + '</p>';
   if (REPLY_NOTE) h += '<p>' + esc(REPLY_NOTE) + '</p>';
+  /* 靜態樞紐頁入口（爬蟲走得到的目錄；同業調貨專區）：業主 2026-11-02 拍板 A */
+  h += '<p class="st-links"><a href="trade/">' + T('hub_trade') + '</a> · <a href="e/">' + T('hub_e') + '</a> · <a href="n/">' + T('hub_n') + '</a> · <a href="m/">' + T('hub_m') + '</a></p>';
   return h ? '<div class="store">' + h + '</div>' : '';
+}
+/* 整批加入詢價單：同引擎（含「也適用」）或同品名的商品，最多 BULK_MAX 件（LINE 連結長度有限；要全部請在樞紐頁下載清單） */
+var BULK_MAX = 60;
+function bulkAdd(kind, key) {
+  var list = ORDER.filter(function (x) {
+    if (kind === 'e') return x.car_code === key || (x.fits && x.fits.indexOf(key) >= 0);
+    return x.name === key;
+  });
+  var added = 0;
+  for (var i = 0; i < list.length && INQ.length < BULK_MAX; i++) { if (!inInq(list[i].id)) { INQ.push({ id: list[i].id, want: '' }); added++; } }
+  saveInq(); updateBar(); updateAddBtn(); refreshMarks();
+  live.textContent = T('bulk_added', { n: added, m: list.length });
+  track('bulk_add', { kind: kind, key: key, added: added, total: list.length });
 }
 function contactDl() {
   var h = '';
@@ -2096,6 +2114,8 @@ function parse(h) {
   if (h === 'all') return { v: 'all' };
   if (h === 'find') return { v: 'find' };
   if ((m = /^p-([a-z0-9]+)$/.exec(h))) return { v: 'p', item: byId.get(m[1]) || null };
+  /* 樞紐頁的「整批加入詢價單」（業主 2026-11-02 拍板 A）：#bulk-e-<車種碼>／#bulk-n-<品名>（URL 編碼），加完跳到詢價單 */
+  if ((m = /^bulk-(e|n)-(.+)$/.exec(h))) { var bk = ''; try { bk = decodeURIComponent(m[2]); } catch (e) { bk = m[2]; } return { v: 'bulk', kind: m[1], key: bk }; }
   return { v: 'home' };
 }
 function drawMain(h, back, force) {
@@ -2117,6 +2137,7 @@ function drawMain(h, back, force) {
     case 'all': html = vAll(); break;
     case 'find': html = vFind(); break;
     case 'p': curItem = r.item; if (r.item) noteRecent(r.item.id); html = r.item ? vProduct(r.item) : vMissing(); break;
+    case 'bulk': html = vLoading(); bulkAdd(r.kind, r.key); setTimeout(function () { location.replace(location.pathname + location.search + '#q'); }, 0); break;
     default: html = vHome();
   }
   view.innerHTML = html;
