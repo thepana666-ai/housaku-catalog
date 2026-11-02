@@ -1747,12 +1747,14 @@ function storeInfo() {
   return h ? '<div class="store">' + h + '</div>' : '';
 }
 /* 整批加入詢價單：同引擎（含「也適用」）或同品名的商品，最多 BULK_MAX 件（LINE 連結長度有限；要全部請在樞紐頁下載清單） */
-var BULK_MAX = 60;
+var BULK_MAX = 40;
 function bulkAdd(kind, key) {
   var list = ORDER.filter(function (x) {
     if (kind === 'e') return x.car_code === key || (x.fits && x.fits.indexOf(key) >= 0);
     return x.name === key;
   });
+  /* 引擎：自己車種的排前面，「也適用」的排後面（超過上限時先留自己的） */
+  if (kind === 'e') list.sort(function (a, b) { return (b.car_code === key ? 1 : 0) - (a.car_code === key ? 1 : 0); });
   var added = 0;
   for (var i = 0; i < list.length && INQ.length < BULK_MAX; i++) { if (!inInq(list[i].id)) { INQ.push({ id: list[i].id, want: '' }); added++; } }
   saveInq(); updateBar(); updateAddBtn(); refreshMarks();
