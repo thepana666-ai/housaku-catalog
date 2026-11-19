@@ -338,6 +338,15 @@ html.lock .totop{display:none}
 .contact a.tl[href^="mailto:"]{white-space:nowrap}
 @media (max-width:479px){.contact{column-gap:.7rem}.contact dd{font-size:.98rem;letter-spacing:0}.contact dd>.btn{width:5.4em}.contact dd:has(>.btn){grid-template-columns:minmax(0,1fr) 5.4em;column-gap:.5rem}}
 .upd{margin:1rem 0 0;color:var(--muted);font-size:.95rem}
+/* 首頁最下方店家地圖：Google 官方嵌入（免金鑰），直接在頁內看，不跳頁（業主 2026-11-20） */
+.smap{margin:1.2rem 0 0;padding-top:.9rem;border-top:1px solid var(--line)}
+.smap h2{margin:0 0 .6rem;font-size:1.1rem}
+.smap-f{position:relative;width:100%;aspect-ratio:4/3;max-height:70vh;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--line)}
+@media (max-width:559px){.smap-f{aspect-ratio:1/1}}
+@media (min-width:820px){.smap-f{aspect-ratio:auto;height:440px}}
+.smap-f iframe{position:absolute;top:0;left:0;display:block;width:100%;height:100%;border:0;transform-origin:0 0}
+.smap-b{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.6rem}
+.smap-b .btn{flex:1 1 9rem}
 .upd b{color:var(--ink);font-family:var(--font-code);font-weight:600}
 
 /* ── 清單頁頭 ── */
@@ -620,7 +629,7 @@ html.lock .fback{display:none}
 @media (prefers-reduced-motion:no-preference){.strip,.lb-strip{scroll-behavior:smooth}}
 </style>
 </head>
-<body data-gen="115/11/19">
+<body data-gen="115/11/20">
 <header class="hdr">
   <div class="top"><div class="gut"><div class="inner">
     <div class="hdrow">
@@ -744,7 +753,7 @@ var I18N = {
     q_wa: '用 WhatsApp 傳給我們', q_mail: '用 Email 寄給我們', q_mail_copy: '複製信箱', q_text_aria: '詢價內容', remove: '移除', remove_aria: '移除 {n}',
     cleared_n: '已清空 {n} 項・', removed_x: '已移除 {x}・', undo: '復原', live_cleared: '已清空，5 秒內可按復原', live_restored: '已復原', live_removed: '已移除，5 秒內可按復原',
     sel_copy: '已選取，請長按「拷貝」', copied_line: '已複製，貼到 LINE 給我們就好', copied_msg: '已複製，貼到訊息裡傳給我們就好', copied_mail: '已複製信箱 ', longpress_mail: '請長按信箱文字選取',
-    theme_label: '切換深淺色', c_map: '地圖', sort_count: '項數', asort_name: '品名', asort_brand: '品牌', asort_qty: '數量多', asort_photo: '有照片', kind_lab: '類別', pn_sug_none: '沒有這個料號', sug_more: '還有 {n} 個，再多打幾個字', sort_az: '字母', list_sort: '排序', c_addr: '地址',
+    theme_label: '切換深淺色', c_map: '地圖', map_h: '店家位置', map_open: '在 Google 地圖看店家', map_dir: '路線', map_title: '禾賀企業有限公司位置（Google 地圖）', sort_count: '項數', asort_name: '品名', asort_brand: '品牌', asort_qty: '數量多', asort_photo: '有照片', kind_lab: '類別', pn_sug_none: '沒有這個料號', sug_more: '還有 {n} 個，再多打幾個字', sort_az: '字母', list_sort: '排序', c_addr: '地址',
     other: '其他', crumbs_aria: '目前位置', sep: '、', korean: '韓國車', lb_aria: '照片放大', lb_hint: '點兩下放大・兩指可縮放・手機橫拿看更大'
   },
   en: {
@@ -773,7 +782,7 @@ var I18N = {
     q_wa: 'Send via WhatsApp', q_mail: 'Send by email', q_mail_copy: 'Copy email', q_text_aria: 'Inquiry text', remove: 'Remove', remove_aria: 'Remove {n}',
     cleared_n: 'Cleared {n} items · ', removed_x: 'Removed {x} · ', undo: 'Undo', live_cleared: 'Cleared. Undo within 5 seconds', live_restored: 'Restored', live_removed: 'Removed. Undo within 5 seconds',
     sel_copy: 'Selected. Long-press to copy', copied_line: 'Copied. Paste it to us on LINE', copied_msg: 'Copied. Paste it into a message to us', copied_mail: 'Email copied ', longpress_mail: 'Long-press the email to select it',
-    theme_label: 'Toggle light / dark', c_map: 'Map', sort_count: 'Count', asort_name: 'Name', asort_brand: 'Brand', asort_qty: 'Most stock', asort_photo: 'With photo', kind_lab: 'Category', pn_sug_none: 'No such part no.', sug_more: '{n} more, keep typing', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
+    theme_label: 'Toggle light / dark', c_map: 'Map', map_h: 'Find us', map_open: 'Open in Google Maps', map_dir: 'Directions', map_title: 'Housaku location (Google Maps)', sort_count: 'Count', asort_name: 'Name', asort_brand: 'Brand', asort_qty: 'Most stock', asort_photo: 'With photo', kind_lab: 'Category', pn_sug_none: 'No such part no.', sug_more: '{n} more, keep typing', sort_az: 'A–Z', list_sort: 'Sort', c_addr: 'Address',
     other: 'Other', crumbs_aria: 'You are here', sep: ', ', korean: 'Korean makes', lb_aria: 'Photo zoom', lb_hint: 'Double-tap to zoom · pinch to scale · turn the phone sideways for a bigger view'
   }
 };
@@ -1771,9 +1780,31 @@ function contactDl() {
   if (WA_BASE) h += '<dt>WhatsApp</dt><dd>' + (waTel ? '<a class="tl" href="' + esc(waTel) + '">' + esc(WA_TXT) + '</a>' : '<span class="sel">' + esc(WA_TXT) + '</span>') + '<a class="btn small line" href="' + esc(WA_BASE) + '" target="_blank" rel="noopener">' + T('c_msg') + '</a></dd>';
   if (EMAIL) h += '<dt>' + T('c_mail') + '</dt><dd><a class="tl sel" href="' + esc(mailHref('')) + '">' + esc(EMAIL) + '</a><button type="button" class="btn small line" data-copy="' + esc(EMAIL) + '">' + T('copy') + '</button></dd>';
   var addr = addressTxt();
-  /* 地址：複製鈕改成「地圖」，開 Google 地圖（業主 2026-10-27）；地圖一律用中文地址查，英文版也準 */
-  if (addr) h += '<dt>' + T('c_addr') + '</dt><dd><span class="sel">' + esc(addr) + '</span><a class="btn small line" href="' + esc('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ADDRESS_ZH || addr)) + '" target="_blank" rel="noopener">' + T('c_map') + '</a></dd>';
+  /* 地址：「地圖」鈕原本開 Google 地圖新頁（只用地址查，對不到店家卡）；業主 2026-11-20 改成捲到首頁最下方的內嵌地圖，不跳頁 */
+  if (addr) h += '<dt>' + T('c_addr') + '</dt><dd><span class="sel">' + esc(addr) + '</span>' + (ADDRESS_ZH ? '<button type="button" class="btn small line" data-tomap="1">' + T('c_map') + '</button>' : '') + '</dd>';
   return h ? '<dl class="contact">' + h + '</dl>' : '';
+}
+/* 首頁最下方店家地圖（業主 2026-11-20）：Google 官方嵌入、不用金鑰；用「公司名＋中文地址」查，Google 會對到商家地點，
+   店名／地址／評分都由 Google 嵌入自己顯示（不手寫）。t=k 衛星圖；下面兩顆鈕新分頁開，不取代本頁。 */
+/* Google 嵌入寬度不到 400px 會把店家卡（店名／地址／評分）收成一顆小鈕：手機上改用 400px 畫、再等比縮小塞進框裡 */
+var MAP_MIN_W = 400, mapFitOn = false;
+function fitMap() {
+  var box = document.querySelector('.smap-f'), f = box && box.querySelector('iframe');
+  if (!f) return;
+  var w = box.clientWidth, h = box.clientHeight, k = w && w < MAP_MIN_W ? w / MAP_MIN_W : 1;
+  f.style.width = k < 1 ? MAP_MIN_W + 'px' : '';
+  f.style.height = k < 1 ? (h / k) + 'px' : '';
+  f.style.transform = k < 1 ? 'scale(' + k + ')' : '';
+}
+function mapHtml() {
+  if (!ADDRESS_ZH) return '';
+  if (!mapFitOn) { mapFitOn = true; window.addEventListener('resize', fitMap); }
+  requestAnimationFrame(fitMap);
+  var q = encodeURIComponent(I18N.zh.company + ' ' + ADDRESS_ZH), hl = LANG === 'en' ? 'en' : 'zh-TW';
+  return '<section class="smap" id="storeMap" aria-labelledby="smapH"><h2 id="smapH">' + T('map_h') + '</h2>' +
+    '<div class="smap-f"><iframe src="' + esc('https://maps.google.com/maps?q=' + q + '&t=k&z=17&hl=' + hl + '&output=embed') + '" title="' + esc(T('map_title')) + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>' +
+    '<div class="smap-b"><a class="btn line" href="' + esc('https://www.google.com/maps/dir/?api=1&destination=' + q) + '" target="_blank" rel="noopener">' + T('map_dir') + '</a>' +
+    '<a class="btn line" href="' + esc('https://www.google.com/maps/search/?api=1&query=' + q) + '" target="_blank" rel="noopener">' + T('map_open') + '</a></div></section>';
 }
 /* 更新日期：中文版民國 115/10/26；英文版換西元 2026-10-26 */
 function genTxt() { var m = /^(\d{2,3})\/(\d{2})\/(\d{2})$/.exec(GEN); return LANG === 'en' && m ? (Number(m[1]) + 1911) + '-' + m[2] + '-' + m[3] : GEN; }
@@ -1916,7 +1947,7 @@ function vHome() {
     '<a class="entry" href="#all"><span class="e-k"><span>' + T('all_items') + '</span></span><span class="e-n"><b>' + fmtN(n) + '</b>' + T('u_item_after') + '</span><span class="e-go" aria-hidden="true">›</span></a>' +
     '</div>' +
     /* 聯絡資訊在首頁最下方（業主 2026-10-26 晚改回；牆改成按鈕一批 30，不會長到看不到底） */
-    wallHtml() + recentHtml() + storeInfo() + contactDl() + updLine();
+    wallHtml() + recentHtml() + storeInfo() + contactDl() + mapHtml() + updLine();
 }
 function vLoading() {
   return '<div class="loading"><p>' + (LOAD_ERR ? T('load_err') : T('loading')) + '</p>' +
@@ -2793,8 +2824,9 @@ document.addEventListener('keydown', function (e) {
 
 /* ── 頁面內點擊 ── */
 view.addEventListener('click', function (e) {
-  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-kind],[data-wsort],[data-lsort],[data-asort],[data-akind],[data-tadd],[data-pstep],#addq');
+  var t = e.target.closest('[data-act],[data-lb],[data-copy],[data-kind],[data-wsort],[data-lsort],[data-asort],[data-akind],[data-tadd],[data-pstep],[data-tomap],#addq');
   if (!t) return;
+  if (t.hasAttribute('data-tomap')) { var sm = document.getElementById('storeMap'); if (sm) sm.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (t.hasAttribute('data-pstep')) { var ps = document.getElementById('pstrip'); if (ps) ps.scrollBy({ left: ps.clientWidth * Number(t.getAttribute('data-pstep')), behavior: 'smooth' }); return; }
   if (t.hasAttribute('data-kind')) { wallKind = t.getAttribute('data-kind'); wallReset(); redrawWall(false); return; }
   if (t.hasAttribute('data-wsort')) { wallSort = t.getAttribute('data-wsort'); wallReset(); redrawWall(false); return; }
